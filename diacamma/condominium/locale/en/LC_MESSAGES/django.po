@@ -1632,3 +1632,192 @@ msgstr "result general"
 
 #~ msgid "Situation of '%s'"
 #~ msgstr "Situation of '%s'"
+
+msgid "ordinary"
+msgstr "ordinary"
+
+msgid "extraordinary"
+msgstr "extraordinary"
+
+msgid "in preparation"
+msgstr "in preparation"
+
+msgid "hour"
+msgstr "hour"
+
+msgid "place"
+msgstr "place"
+
+msgid "type of assembly"
+msgstr "type of assembly"
+
+msgid "general assembly"
+msgstr "general assembly"
+
+msgid "general assemblies"
+msgstr "general assemblies"
+
+msgid "date to define"
+msgstr "date to define"
+
+msgid "Chairman of the meeting"
+msgstr "Chairman of the meeting"
+
+msgid "The general assembly appoints ... as chairman of the meeting."
+msgstr "The general assembly appoints ... as chairman of the meeting."
+
+msgid "Scrutineer(s)"
+msgstr "Scrutineer(s)"
+
+msgid "The general assembly appoints ... as scrutineer(s)."
+msgstr "The general assembly appoints ... as scrutineer(s)."
+
+msgid "Secretary of the meeting"
+msgstr "Secretary of the meeting"
+
+msgid "The general assembly appoints ... as secretary of the meeting."
+msgstr "The general assembly appoints ... as secretary of the meeting."
+
+msgid "decision"
+msgstr "decision"
+
+msgid "information (no vote)"
+msgstr "information (no vote)"
+
+msgid "article 24 (majority of votes cast)"
+msgstr "article 24 (majority of votes cast)"
+
+msgid "article 25 (majority of all votes)"
+msgstr "article 25 (majority of all votes)"
+
+msgid "article 26 (double majority)"
+msgstr "article 26 (double majority)"
+
+msgid "unanimity"
+msgstr "unanimity"
+
+msgid "title"
+msgstr "title"
+
+msgid "draft resolution"
+msgstr "draft resolution"
+
+msgid "kind"
+msgstr "kind"
+
+msgid "majority"
+msgstr "majority"
+
+msgid "requested by"
+msgstr "requested by"
+
+msgid "request date"
+msgstr "request date"
+
+msgid "internal note"
+msgstr "internal note"
+
+msgid "This general assembly is no longer in building!"
+msgstr "This general assembly is no longer in building!"
+
+msgid "agenda item"
+msgstr "agenda item"
+
+msgid "agenda items"
+msgstr "agenda items"
+
+msgid "syndic"
+msgstr "syndic"
+
+msgid "General assemblies"
+msgstr "General assemblies"
+
+msgid "Preparation of general assemblies"
+msgstr "Preparation of general assemblies"
+
+msgid "Manage of general assemblies"
+msgstr "Manage of general assemblies"
+
+msgid "Add general assembly"
+msgstr "Add general assembly"
+
+msgid "Modify general assembly"
+msgstr "Modify general assembly"
+
+msgid "Show general assembly"
+msgstr "Show general assembly"
+
+msgid "Delete general assembly"
+msgstr "Delete general assembly"
+
+msgid "Only a general assembly in building can be deleted!"
+msgstr "Only a general assembly in building can be deleted!"
+
+msgid "Print agenda"
+msgstr "Print agenda"
+
+msgid "agenda"
+msgstr "agenda"
+
+msgid "Agenda items waiting for a general assembly"
+msgstr "Agenda items waiting for a general assembly"
+
+msgid "Pending agenda items"
+msgstr "Pending agenda items"
+
+msgid "Add agenda item"
+msgstr "Add agenda item"
+
+msgid "Modify agenda item"
+msgstr "Modify agenda item"
+
+msgid "Show agenda item"
+msgstr "Show agenda item"
+
+msgid "Delete agenda item"
+msgstr "Delete agenda item"
+
+msgid "Up"
+msgstr "Up"
+
+msgid "Down"
+msgstr "Down"
+
+msgid "Up agenda item"
+msgstr "Up agenda item"
+
+msgid "Down agenda item"
+msgstr "Down agenda item"
+
+msgid "Withdraw"
+msgstr "Withdraw"
+
+msgid "Withdraw agenda item"
+msgstr "Withdraw agenda item"
+
+msgid "Do you want to withdraw these agenda items? They will wait for another general assembly."
+msgstr "Do you want to withdraw these agenda items? They will wait for another general assembly."
+
+msgid "Add pending items"
+msgstr "Add pending items"
+
+msgid "Add pending agenda items"
+msgstr "Add pending agenda items"
+
+msgid "pending agenda items"
+msgstr "pending agenda items"
+
+msgid "Add to assembly"
+msgstr "Add to assembly"
+
+msgid "Add to general assembly"
+msgstr "Add to general assembly"
+
+msgid "draft agenda"
+msgstr "draft agenda"
+
+msgid "Draft agenda of the general assembly"
+msgstr "Draft agenda of the general assembly"
+
+msgid "N°"
+msgstr "N°"

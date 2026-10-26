@@ -1653,3 +1653,192 @@ msgstr "solde"
 
 #~ msgid "Situation of '%s'"
 #~ msgstr "Situation de '%s'"
+
+msgid "ordinary"
+msgstr "ordinaire"
+
+msgid "extraordinary"
+msgstr "extraordinaire"
+
+msgid "in preparation"
+msgstr "en préparation"
+
+msgid "hour"
+msgstr "heure"
+
+msgid "place"
+msgstr "lieu"
+
+msgid "type of assembly"
+msgstr "type d'assemblée"
+
+msgid "general assembly"
+msgstr "assemblée générale"
+
+msgid "general assemblies"
+msgstr "assemblées générales"
+
+msgid "date to define"
+msgstr "date à définir"
+
+msgid "Chairman of the meeting"
+msgstr "Président de séance"
+
+msgid "The general assembly appoints ... as chairman of the meeting."
+msgstr "L'assemblée générale désigne ... en qualité de président de séance."
+
+msgid "Scrutineer(s)"
+msgstr "Scrutateur(s)"
+
+msgid "The general assembly appoints ... as scrutineer(s)."
+msgstr "L'assemblée générale désigne ... en qualité de scrutateur(s)."
+
+msgid "Secretary of the meeting"
+msgstr "Secrétaire de séance"
+
+msgid "The general assembly appoints ... as secretary of the meeting."
+msgstr "L'assemblée générale désigne ... en qualité de secrétaire de séance."
+
+msgid "decision"
+msgstr "décision"
+
+msgid "information (no vote)"
+msgstr "information (sans vote)"
+
+msgid "article 24 (majority of votes cast)"
+msgstr "article 24 (majorité des voix exprimées)"
+
+msgid "article 25 (majority of all votes)"
+msgstr "article 25 (majorité des voix de tous les copropriétaires)"
+
+msgid "article 26 (double majority)"
+msgstr "article 26 (double majorité)"
+
+msgid "unanimity"
+msgstr "unanimité"
+
+msgid "title"
+msgstr "titre"
+
+msgid "draft resolution"
+msgstr "projet de résolution"
+
+msgid "kind"
+msgstr "nature"
+
+msgid "majority"
+msgstr "majorité"
+
+msgid "requested by"
+msgstr "demandé par"
+
+msgid "request date"
+msgstr "date de la demande"
+
+msgid "internal note"
+msgstr "note interne"
+
+msgid "This general assembly is no longer in building!"
+msgstr "Cette assemblée générale n'est plus en préparation !"
+
+msgid "agenda item"
+msgstr "point de l'ordre du jour"
+
+msgid "agenda items"
+msgstr "points de l'ordre du jour"
+
+msgid "syndic"
+msgstr "syndic"
+
+msgid "General assemblies"
+msgstr "Assemblées générales"
+
+msgid "Preparation of general assemblies"
+msgstr "Préparation des assemblées générales"
+
+msgid "Manage of general assemblies"
+msgstr "Gestion des assemblées générales"
+
+msgid "Add general assembly"
+msgstr "Ajouter une assemblée générale"
+
+msgid "Modify general assembly"
+msgstr "Modifier l'assemblée générale"
+
+msgid "Show general assembly"
+msgstr "Voir l'assemblée générale"
+
+msgid "Delete general assembly"
+msgstr "Supprimer l'assemblée générale"
+
+msgid "Only a general assembly in building can be deleted!"
+msgstr "Seule une assemblée générale en préparation peut être supprimée !"
+
+msgid "Print agenda"
+msgstr "Imprimer l'ordre du jour"
+
+msgid "agenda"
+msgstr "ordre du jour"
+
+msgid "Agenda items waiting for a general assembly"
+msgstr "Points en attente d'une assemblée générale"
+
+msgid "Pending agenda items"
+msgstr "Points en attente"
+
+msgid "Add agenda item"
+msgstr "Ajouter un point"
+
+msgid "Modify agenda item"
+msgstr "Modifier le point"
+
+msgid "Show agenda item"
+msgstr "Voir le point"
+
+msgid "Delete agenda item"
+msgstr "Supprimer le point"
+
+msgid "Up"
+msgstr "Monter"
+
+msgid "Down"
+msgstr "Descendre"
+
+msgid "Up agenda item"
+msgstr "Monter le point"
+
+msgid "Down agenda item"
+msgstr "Descendre le point"
+
+msgid "Withdraw"
+msgstr "Retirer"
+
+msgid "Withdraw agenda item"
+msgstr "Retirer le point"
+
+msgid "Do you want to withdraw these agenda items? They will wait for another general assembly."
+msgstr "Voulez-vous retirer ces points ? Ils seront remis en attente d'une autre assemblée générale."
+
+msgid "Add pending items"
+msgstr "Ajouter des points en attente"
+
+msgid "Add pending agenda items"
+msgstr "Ajouter des points en attente"
+
+msgid "pending agenda items"
+msgstr "points en attente"
+
+msgid "Add to assembly"
+msgstr "Inscrire à une AG"
+
+msgid "Add to general assembly"
+msgstr "Inscrire à une assemblée générale"
+
+msgid "draft agenda"
+msgstr "projet d'ordre du jour"
+
+msgid "Draft agenda of the general assembly"
+msgstr "Projet d'ordre du jour de l'assemblée générale"
+
+msgid "N°"
+msgstr "N°"

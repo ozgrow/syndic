@@ -38,7 +38,7 @@ from diacamma.accounting.tools import current_system_account
 from diacamma.accounting.models import Third, FiscalYear
 from diacamma.payoff.editors import SupportingEditor
 from diacamma.condominium.models import Set, CallDetail, CallFunds, CallFundsSupporting, Expense, Owner, RecoverableLoadRatio, LIST_DEFAULT_ACCOUNTS, \
-    PropertyLot
+    PropertyLot, Assembly, AgendaItem
 from diacamma.condominium.system import current_system_condo
 
 
@@ -361,3 +361,45 @@ class ExpenseDetailEditor(LucteriosEditor):
         xfer.get_components("set").colspan = old_account.colspan + 1
         xfer.get_components("designation").colspan = old_account.colspan + 1
         xfer.get_components("price").colspan = old_account.colspan + 1
+
+
+class AssemblyEditor(LucteriosEditor):
+
+    def saving(self, xfer):
+        if not self.item.agendaitem_set.exists():
+            self.item.add_opening_items()
+
+
+class AgendaItemEditor(LucteriosEditor):
+
+    def edit(self, xfer):
+        distribution_key = xfer.get_components('distribution_key')
+        distribution_key.set_needed(False)
+        distribution_key.set_select_query(CustomField.objects.filter(modelname=PropertyLot.get_long_name()))
+        distribution_key.select_list[0] = (0, _('general'))
+        requested_by = xfer.get_components('requested_by')
+        requested_by.set_needed(False)
+        requested_by.set_select_query(Owner.objects.filter(third__status=Third.STATUS_ENABLE))
+        requested_by.select_list[0] = (0, _('syndic'))
+        kind = xfer.get_components('kind')
+        kind.java_script = """
+var is_decision=(current.getValue()==%d);
+parent.get('majority').setVisible(is_decision);
+parent.get('distribution_key').setVisible(is_decision);
+""" % AgendaItem.KIND_DECISION
+
+    def saving(self, xfer):
+        if (self.item.assembly is not None) and (self.item.num is None):
+            self.item.attach(self.item.assembly)
+
+    def show(self, xfer):
+        if self.item.kind == AgendaItem.KIND_INFORMATION:
+            xfer.remove_component('majority')
+            xfer.remove_component('distribution_key')
+        else:
+            distribution_key = xfer.get_components('distribution_key')
+            if distribution_key.value is None:
+                distribution_key.value = _('general')
+        requested_by = xfer.get_components('requested_by')
+        if requested_by.value is None:
+            requested_by.value = _('syndic')

@@ -2475,6 +2475,149 @@ class Owner(Supporting):
             owner.check_account()
 
 
+class Assembly(LucteriosModel):
+    TYPE_ORDINARY = 0
+    TYPE_EXTRAORDINARY = 1
+    LIST_TYPES = ((TYPE_ORDINARY, _('ordinary')), (TYPE_EXTRAORDINARY, _('extraordinary')))
+
+    STATUS_BUILDING = 0
+    LIST_STATUS = ((STATUS_BUILDING, _('in preparation')),)
+
+    date = models.DateField(verbose_name=_('date'), null=True, default=None)
+    hour = models.TimeField(verbose_name=_('hour'), null=True, default=None)
+    place = models.CharField(_('place'), max_length=200, blank=True, default='')
+    type_assembly = models.IntegerField(verbose_name=_('type of assembly'), choices=LIST_TYPES, null=False, default=TYPE_ORDINARY)
+    status = FSMIntegerField(verbose_name=_('status'), choices=LIST_STATUS, null=False, default=STATUS_BUILDING, db_index=True)
+    comment = models.TextField(_('comment'), null=True, default="")
+
+    def __str__(self):
+        if self.date is None:
+            return "%s (%s)" % (_('general assembly'), _('date to define'))
+        return "%s %s" % (_('general assembly'), get_date_formating(self.date))
+
+    @classmethod
+    def get_default_fields(cls):
+        return ["date", "hour", "place", "type_assembly", "status"]
+
+    @classmethod
+    def get_edit_fields(cls):
+        return ["date", "hour", "place", "type_assembly", "comment"]
+
+    @classmethod
+    def get_show_fields(cls):
+        return [("date", "hour"), ("place", "type_assembly"), "status", "agendaitem_set", "comment"]
+
+    @classmethod
+    def get_print_fields(cls):
+        return ["date", "hour", "place", "type_assembly", "status",
+                "agendaitem_set.num", "agendaitem_set.title", "agendaitem_set.text",
+                "agendaitem_set.kind", "agendaitem_set.majority", "agendaitem_set.distribution_key"]
+
+    def add_opening_items(self):
+        for title, text in ((_('Chairman of the meeting'), _('The general assembly appoints ... as chairman of the meeting.')),
+                            (_('Scrutineer(s)'), _('The general assembly appoints ... as scrutineer(s).')),
+                            (_('Secretary of the meeting'), _('The general assembly appoints ... as secretary of the meeting.'))):
+            AgendaItem.objects.create(title=title, text=text, kind=AgendaItem.KIND_DECISION,
+                                      majority=AgendaItem.MAJORITY_ART24).attach(self)
+
+    def renumber(self):
+        for index, item in enumerate(self.agendaitem_set.order_by('num', 'id')):
+            if item.num != index + 1:
+                item.num = index + 1
+                item.save()
+
+    class Meta(object):
+        verbose_name = _('general assembly')
+        verbose_name_plural = _('general assemblies')
+        ordering = ['-date']
+
+
+class AgendaItem(LucteriosModel):
+    KIND_DECISION = 0
+    KIND_INFORMATION = 1
+    LIST_KINDS = ((KIND_DECISION, _('decision')), (KIND_INFORMATION, _('information (no vote)')))
+
+    MAJORITY_ART24 = 0
+    MAJORITY_ART25 = 1
+    MAJORITY_ART26 = 2
+    MAJORITY_UNANIMITY = 3
+    LIST_MAJORITIES = ((MAJORITY_ART24, _('article 24 (majority of votes cast)')),
+                       (MAJORITY_ART25, _('article 25 (majority of all votes)')),
+                       (MAJORITY_ART26, _('article 26 (double majority)')),
+                       (MAJORITY_UNANIMITY, _('unanimity')))
+
+    assembly = models.ForeignKey(Assembly, verbose_name=_('general assembly'), null=True, default=None, db_index=True, on_delete=models.CASCADE)
+    num = models.IntegerField(verbose_name=_('numeros'), null=True, default=None)
+    title = models.CharField(_('title'), max_length=200, blank=False)
+    text = models.TextField(_('draft resolution'), null=True, default="")
+    kind = models.IntegerField(verbose_name=_('kind'), choices=LIST_KINDS, null=False, default=KIND_DECISION)
+    majority = models.IntegerField(verbose_name=_('majority'), choices=LIST_MAJORITIES, null=True, default=MAJORITY_ART24)
+    distribution_key = models.ForeignKey(CustomField, verbose_name=_('distribution key'), null=True, default=None, on_delete=models.PROTECT)
+    requested_by = models.ForeignKey('condominium.Owner', verbose_name=_('requested by'), null=True, default=None, on_delete=models.SET_NULL)
+    request_date = models.DateField(verbose_name=_('request date'), null=True, default=None)
+    comment = models.TextField(_('internal note'), null=True, default="")
+
+    def __str__(self):
+        if self.num is None:
+            return self.title
+        return "%d - %s" % (self.num, self.title)
+
+    @classmethod
+    def get_default_fields(cls):
+        return ["num", "title", "kind", "majority", "requested_by"]
+
+    @classmethod
+    def get_edit_fields(cls):
+        return ["title", "text", "kind", "majority", "distribution_key", "requested_by", "request_date", "comment"]
+
+    @classmethod
+    def get_show_fields(cls):
+        return ["assembly", "num", "title", "text", "kind", "majority", "distribution_key", "requested_by", "request_date", "comment"]
+
+    def attach(self, assembly):
+        if assembly.status != Assembly.STATUS_BUILDING:
+            raise LucteriosException(IMPORTANT, _('This general assembly is no longer in building!'))
+        last_num = assembly.agendaitem_set.aggregate(Max('num'))['num__max']
+        self.assembly = assembly
+        self.num = 1 if last_num is None else last_num + 1
+        self.save()
+
+    def detach(self):
+        assembly = self.assembly
+        if assembly is not None:
+            self.assembly = None
+            self.num = None
+            self.save()
+            assembly.renumber()
+
+    def _swap_with(self, other):
+        if other is not None:
+            other.num, self.num = self.num, other.num
+            other.save()
+            self.save()
+
+    def up_order(self):
+        if self.assembly is not None:
+            self._swap_with(self.assembly.agendaitem_set.filter(num__lt=self.num).order_by('-num').first())
+
+    def down_order(self):
+        if self.assembly is not None:
+            self._swap_with(self.assembly.agendaitem_set.filter(num__gt=self.num).order_by('num').first())
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.kind = int(self.kind)
+        if self.kind == self.KIND_INFORMATION:
+            self.majority = None
+        elif self.majority is None:
+            self.majority = self.MAJORITY_ART24
+        return LucteriosModel.save(self, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
+    class Meta(object):
+        verbose_name = _('agenda item')
+        verbose_name_plural = _('agenda items')
+        ordering = ['assembly', 'num', 'id']
+
+
 def convert_accounting(year, thirds_convert):
     year.getorcreate_chartaccount(correct_accounting_code(Params.getvalue('condominium-default-owner-account1')),
                                   'Copropriétaire - budget prévisionnel')
