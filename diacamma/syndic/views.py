@@ -26,8 +26,36 @@ from __future__ import unicode_literals
 from os.path import join, dirname
 import os
 
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 from lucterios.framework import signal_and_lock
 from lucterios.CORE.parameters import Params
+
+THEME_FILES = ("diacamma_syndic.css", join("themes", "revision1.css"))
+
+
+class ThemeStyle(object):
+    """Application style: the client asks for it at each connection (CORE views_auth calls decode())"""
+
+    def decode(self):
+        try:
+            theme = int(Params.getvalue("syndic-theme"))
+        except Exception:
+            theme = 0
+        if (theme < 0) or (theme >= len(THEME_FILES)):
+            theme = 0
+        with open(join(dirname(__file__), THEME_FILES[theme]), encoding="utf-8") as css_file:
+            return css_file.read()
+
+
+settings.APPLIS_STYLE = ThemeStyle()
+
+
+@signal_and_lock.Signal.decorate('config')
+def syndic_config(setting_list):
+    setting_list['95@%s' % _("Appearance")] = ['syndic-theme']
+    return True
 
 
 @signal_and_lock.Signal.decorate('initial_account')
