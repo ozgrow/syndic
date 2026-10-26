@@ -27,7 +27,7 @@ from __future__ import unicode_literals
 from django.utils.translation import gettext_lazy as _
 
 from lucterios.framework.editors import LucteriosEditor
-from lucterios.framework.xfercomponents import XferCompButton, XferCompSelect
+from lucterios.framework.xfercomponents import XferCompButton, XferCompSelect, XferCompLabelForm
 from lucterios.framework.xferadvance import XferSave, TITLE_DELETE
 from lucterios.framework.tools import ActionsManage, FORMTYPE_MODAL, CLOSE_NO, SELECT_SINGLE, FORMTYPE_REFRESH, SELECT_MULTI
 from lucterios.framework.error import LucteriosException, IMPORTANT
@@ -381,10 +381,16 @@ class AgendaItemEditor(LucteriosEditor):
         requested_by.set_needed(False)
         requested_by.set_select_query(Owner.objects.filter(third__status=Third.STATUS_ENABLE))
         requested_by.select_list[0] = (0, _('syndic'))
+        majority = xfer.get_components('majority')
+        majority_help = XferCompLabelForm('majority_help')
+        majority_help.set_value_as_info(AgendaItem.MAJORITY_HELP)
+        majority_help.set_location(majority.col, xfer.get_max_row() + 1, 2)
+        xfer.add_component(majority_help)
         kind = xfer.get_components('kind')
         kind.java_script = """
 var is_decision=(current.getValue()==%d);
 parent.get('majority').setVisible(is_decision);
+parent.get('majority_help').setVisible(is_decision);
 parent.get('distribution_key').setVisible(is_decision);
 """ % AgendaItem.KIND_DECISION
 

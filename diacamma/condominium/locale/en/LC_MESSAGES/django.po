@@ -1821,3 +1821,81 @@ msgstr "Draft agenda of the general assembly"
 
 msgid "N°"
 msgstr "N°"
+
+msgid "{[b]}Article 24{[/b]}: accounts, budget, maintenance works, works required by law, meeting officers.{[br/]}{[b]}Article 25{[/b]}: appointment of the syndic, council members, improvement works, works fund, adoption of the multi-year works plan (second vote under article 24 if at least 1/3 of all votes, art. 25-1).{[br/]}{[b]}Article 26{[/b]}: amendment of the condominium regulations, sale of common parts.{[br/]}{[b]}Unanimity{[/b]}: distribution of charges, use of the building."
+msgstr "{[b]}Article 24{[/b]}: accounts, budget, maintenance works, works required by law, meeting officers.{[br/]}{[b]}Article 25{[/b]}: appointment of the syndic, council members, improvement works, works fund, adoption of the multi-year works plan (second vote under article 24 if at least 1/3 of all votes, art. 25-1).{[br/]}{[b]}Article 26{[/b]}: amendment of the condominium regulations, sale of common parts.{[br/]}{[b]}Unanimity{[/b]}: distribution of charges, use of the building."
+
+msgid "Approval of the accounts"
+msgstr "Approval of the accounts"
+
+msgid "The general assembly approves the accounts of the financial year from ... to ..."
+msgstr "The general assembly approves the accounts of the financial year from ... to ..."
+
+msgid "Forecast budget"
+msgstr "Forecast budget"
+
+msgid "The general assembly votes the forecast budget of the financial year from ... to ... for an amount of ... EUR."
+msgstr "The general assembly votes the forecast budget of the financial year from ... to ... for an amount of ... EUR."
+
+msgid "Appointment of the syndic"
+msgstr "Appointment of the syndic"
+
+msgid "The general assembly appoints ... as syndic, for a term from ... to ..."
+msgstr "The general assembly appoints ... as syndic, for a term from ... to ..."
+
+msgid "Election of the members of the condominium council"
+msgstr "Election of the members of the condominium council"
+
+msgid "The general assembly elects ... as members of the condominium council."
+msgstr "The general assembly elects ... as members of the condominium council."
+
+msgid "Works fund contribution"
+msgstr "Works fund contribution"
+
+msgid "The general assembly sets the annual contribution to the works fund at ... EUR (at least 5% of the forecast budget)."
+msgstr "The general assembly sets the annual contribution to the works fund at ... EUR (at least 5% of the forecast budget)."
+
+msgid "Preparation of a multi-year works plan"
+msgstr "Preparation of a multi-year works plan"
+
+msgid "The general assembly decides to have a draft multi-year works plan prepared by ..."
+msgstr "The general assembly decides to have a draft multi-year works plan prepared by ..."
+
+msgid "Adoption of the multi-year works plan"
+msgstr "Adoption of the multi-year works plan"
+
+msgid "The general assembly adopts the multi-year works plan annexed to the notice of meeting."
+msgstr "The general assembly adopts the multi-year works plan annexed to the notice of meeting."
+
+msgid "Maintenance works"
+msgstr "Maintenance works"
+
+msgid "The general assembly decides to carry out the following works: ... for a budget of ... EUR."
+msgstr "The general assembly decides to carry out the following works: ... for a budget of ... EUR."
+
+msgid "Amendment of the condominium regulations"
+msgstr "Amendment of the condominium regulations"
+
+msgid "The general assembly decides to amend the condominium regulations as follows: ..."
+msgstr "The general assembly decides to amend the condominium regulations as follows: ..."
+
+msgid "Amendment of the distribution of charges"
+msgstr "Amendment of the distribution of charges"
+
+msgid "The general assembly decides to amend the distribution of charges as follows: ..."
+msgstr "The general assembly decides to amend the distribution of charges as follows: ..."
+
+msgid "Information of the syndic"
+msgstr "Information of the syndic"
+
+msgid "The syndic presents to the general assembly: ..."
+msgstr "The syndic presents to the general assembly: ..."
+
+msgid "Add from template"
+msgstr "Add from template"
+
+msgid "Add agenda items from template"
+msgstr "Add agenda items from template"
+
+msgid "templates"
+msgstr "templates"

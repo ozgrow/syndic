@@ -229,6 +229,34 @@ class AssemblyAddPendingItems(XferContainerAcknowledge):
                 item.attach(self.item)
 
 
+@ActionsManage.affect_grid(_('Add from template'), short_icon='mdi:mdi-text-box-plus-outline', condition=can_edit_item)
+@MenuManage.describ('condominium.add_assembly')
+class AgendaItemAddFromTemplate(XferContainerAcknowledge):
+    short_icon = "mdi:mdi-format-list-numbered"
+    model = AgendaItem
+    field_id = 'agendaitem'
+    caption = _("Add agenda items from template")
+
+    def fillresponse(self, templates=(), assembly=0):
+        if self.getparam('SAVE') is None:
+            dlg = self.create_custom(model=AgendaItem)
+            img = XferCompImage('img')
+            img.set_value(self.short_icon, '#')
+            img.set_location(0, 0)
+            dlg.add_component(img)
+            sel = XferCompCheckList('templates')
+            sel.set_select([(index, "%s (%s)" % (title, dict(AgendaItem.LIST_MAJORITIES)[majority] if majority is not None else _('information (no vote)')))
+                            for index, (title, _text, _kind, majority) in enumerate(AgendaItem.get_templates())])
+            sel.set_location(1, 0)
+            sel.description = _('templates')
+            dlg.add_component(sel)
+            dlg.add_action(self.return_action(TITLE_OK, short_icon='mdi:mdi-check'), params={"SAVE": "YES"})
+            dlg.add_action(WrapAction(TITLE_CANCEL, short_icon='mdi:mdi-cancel'))
+        else:
+            target = Assembly.objects.get(id=assembly) if assembly != 0 else None
+            AgendaItem.create_from_templates(templates, target)
+
+
 @ActionsManage.affect_grid(_('Add to assembly'), short_icon='mdi:mdi-tray-arrow-down', unique=SELECT_MULTI, condition=lambda xfer, gridname='': (not in_assembly(xfer)) and Assembly.objects.filter(status=Assembly.STATUS_BUILDING).exists())
 @MenuManage.describ('condominium.add_assembly')
 class AgendaItemAttach(XferContainerAcknowledge):

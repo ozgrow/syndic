@@ -1842,3 +1842,81 @@ msgstr "Projet d'ordre du jour de l'assemblée générale"
 
 msgid "N°"
 msgstr "N°"
+
+msgid "{[b]}Article 24{[/b]}: accounts, budget, maintenance works, works required by law, meeting officers.{[br/]}{[b]}Article 25{[/b]}: appointment of the syndic, council members, improvement works, works fund, adoption of the multi-year works plan (second vote under article 24 if at least 1/3 of all votes, art. 25-1).{[br/]}{[b]}Article 26{[/b]}: amendment of the condominium regulations, sale of common parts.{[br/]}{[b]}Unanimity{[/b]}: distribution of charges, use of the building."
+msgstr "{[b]}Article 24{[/b]} : comptes, budget, travaux d'entretien, travaux obligatoires, bureau de séance.{[br/]}{[b]}Article 25{[/b]} : désignation du syndic, conseil syndical, travaux d'amélioration, fonds de travaux, adoption du plan pluriannuel de travaux (second vote à l'article 24 si au moins 1/3 des voix de tous, art. 25-1).{[br/]}{[b]}Article 26{[/b]} : modification du règlement de copropriété, vente de parties communes.{[br/]}{[b]}Unanimité{[/b]} : répartition des charges, destination de l'immeuble."
+
+msgid "Approval of the accounts"
+msgstr "Approbation des comptes"
+
+msgid "The general assembly approves the accounts of the financial year from ... to ..."
+msgstr "L'assemblée générale approuve les comptes de l'exercice du ... au ..."
+
+msgid "Forecast budget"
+msgstr "Budget prévisionnel"
+
+msgid "The general assembly votes the forecast budget of the financial year from ... to ... for an amount of ... EUR."
+msgstr "L'assemblée générale vote le budget prévisionnel de l'exercice du ... au ... pour un montant de ... €."
+
+msgid "Appointment of the syndic"
+msgstr "Désignation du syndic"
+
+msgid "The general assembly appoints ... as syndic, for a term from ... to ..."
+msgstr "L'assemblée générale désigne ... en qualité de syndic, pour un mandat du ... au ..."
+
+msgid "Election of the members of the condominium council"
+msgstr "Élection des membres du conseil syndical"
+
+msgid "The general assembly elects ... as members of the condominium council."
+msgstr "L'assemblée générale élit ... en qualité de membres du conseil syndical."
+
+msgid "Works fund contribution"
+msgstr "Cotisation au fonds de travaux"
+
+msgid "The general assembly sets the annual contribution to the works fund at ... EUR (at least 5% of the forecast budget)."
+msgstr "L'assemblée générale fixe la cotisation annuelle au fonds de travaux à ... € (au moins 5 % du budget prévisionnel)."
+
+msgid "Preparation of a multi-year works plan"
+msgstr "Élaboration d'un plan pluriannuel de travaux"
+
+msgid "The general assembly decides to have a draft multi-year works plan prepared by ..."
+msgstr "L'assemblée générale décide de faire élaborer un projet de plan pluriannuel de travaux par ..."
+
+msgid "Adoption of the multi-year works plan"
+msgstr "Adoption du plan pluriannuel de travaux"
+
+msgid "The general assembly adopts the multi-year works plan annexed to the notice of meeting."
+msgstr "L'assemblée générale adopte le plan pluriannuel de travaux annexé à la convocation."
+
+msgid "Maintenance works"
+msgstr "Travaux d'entretien"
+
+msgid "The general assembly decides to carry out the following works: ... for a budget of ... EUR."
+msgstr "L'assemblée générale décide de réaliser les travaux suivants : ... pour un budget de ... €."
+
+msgid "Amendment of the condominium regulations"
+msgstr "Modification du règlement de copropriété"
+
+msgid "The general assembly decides to amend the condominium regulations as follows: ..."
+msgstr "L'assemblée générale décide de modifier le règlement de copropriété comme suit : ..."
+
+msgid "Amendment of the distribution of charges"
+msgstr "Modification de la répartition des charges"
+
+msgid "The general assembly decides to amend the distribution of charges as follows: ..."
+msgstr "L'assemblée générale décide de modifier la répartition des charges comme suit : ..."
+
+msgid "Information of the syndic"
+msgstr "Information du syndic"
+
+msgid "The syndic presents to the general assembly: ..."
+msgstr "Le syndic présente à l'assemblée générale : ..."
+
+msgid "Add from template"
+msgstr "Ajouter depuis un modèle"
+
+msgid "Add agenda items from template"
+msgstr "Ajouter des points depuis un modèle"
+
+msgid "templates"
+msgstr "modèles"

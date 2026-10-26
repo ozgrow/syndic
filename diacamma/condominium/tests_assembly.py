@@ -33,7 +33,7 @@ from diacamma.condominium.test_tools import default_setowner_fr
 from diacamma.condominium.models import Assembly, AgendaItem
 from diacamma.condominium.views_assembly import AssemblyList, AssemblyAddModify, AssemblyShow, AssemblyDel, AssemblyPrint, \
     AgendaItemList, AgendaItemAddModify, AgendaItemShow, AgendaItemDel, AgendaItemUp, AgendaItemDown, AgendaItemWithdraw, \
-    AssemblyAddPendingItems, AgendaItemAttach
+    AssemblyAddPendingItems, AgendaItemAttach, AgendaItemAddFromTemplate
 
 
 class AssemblyAgendaTest(LucteriosTest):
@@ -184,6 +184,32 @@ class AssemblyAgendaTest(LucteriosTest):
         self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyDel')
         self.assertEqual(Assembly.objects.count(), 0)
         self.assertEqual(list(AgendaItem.objects.values_list('title', flat=True)), ['Point en attente'])
+
+    def test_templates(self):
+        self.factory.xfer = AgendaItemAddFromTemplate()
+        self.calljson('/diacamma.condominium/agendaItemAddFromTemplate', {}, False)
+        self.assert_observer('core.custom', 'diacamma.condominium', 'agendaItemAddFromTemplate')
+        self.assert_select_equal('templates', len(AgendaItem.get_templates()), checked=True)
+
+        self.factory.xfer = AgendaItemAddFromTemplate()
+        self.calljson('/diacamma.condominium/agendaItemAddFromTemplate', {'SAVE': 'YES', 'templates': '2;10'}, False)
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'agendaItemAddFromTemplate')
+        self.factory.xfer = AgendaItemList()
+        self.calljson('/diacamma.condominium/agendaItemList', {}, False)
+        self.assert_count_equal('agendaitem', 2)
+        self.assert_json_equal('', 'agendaitem/@0/title', 'Désignation du syndic')
+        self.assert_json_equal('', 'agendaitem/@0/majority', AgendaItem.MAJORITY_ART25)
+        self.assert_json_equal('', 'agendaitem/@1/kind', AgendaItem.KIND_INFORMATION)
+        self.assert_json_equal('', 'agendaitem/@1/majority', None)
+
+        assembly = self._add_assembly()
+        self.factory.xfer = AgendaItemAddFromTemplate()
+        self.calljson('/diacamma.condominium/agendaItemAddFromTemplate', {'SAVE': 'YES', 'templates': '0;1', 'assembly': assembly.id}, False)
+        self._check_agenda(assembly.id, ['Président de séance', 'Scrutateur(s)', 'Secrétaire de séance', 'Approbation des comptes', 'Budget prévisionnel'])
+
+        self.factory.xfer = AgendaItemAddModify()
+        self.calljson('/diacamma.condominium/agendaItemAddModify', {}, False)
+        self.assertEqual(self.json_comp['majority_help']['component'], 'LABELFORM')
 
     def test_print_agenda(self):
         assembly = self._add_assembly()

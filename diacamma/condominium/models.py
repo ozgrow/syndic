@@ -2574,6 +2574,37 @@ class AgendaItem(LucteriosModel):
     def get_show_fields(cls):
         return ["assembly", "num", "title", "text", "kind", "majority", "distribution_key", "requested_by", "request_date", "comment"]
 
+    MAJORITY_HELP = _("{[b]}Article 24{[/b]}: accounts, budget, maintenance works, works required by law, meeting officers.{[br/]}"
+                      "{[b]}Article 25{[/b]}: appointment of the syndic, council members, improvement works, works fund, adoption of the multi-year works plan "
+                      "(second vote under article 24 if at least 1/3 of all votes, art. 25-1).{[br/]}"
+                      "{[b]}Article 26{[/b]}: amendment of the condominium regulations, sale of common parts.{[br/]}"
+                      "{[b]}Unanimity{[/b]}: distribution of charges, use of the building.")
+
+    @classmethod
+    def get_templates(cls):
+        return (
+            (_('Approval of the accounts'), _('The general assembly approves the accounts of the financial year from ... to ...'), cls.KIND_DECISION, cls.MAJORITY_ART24),
+            (_('Forecast budget'), _('The general assembly votes the forecast budget of the financial year from ... to ... for an amount of ... EUR.'), cls.KIND_DECISION, cls.MAJORITY_ART24),
+            (_('Appointment of the syndic'), _('The general assembly appoints ... as syndic, for a term from ... to ...'), cls.KIND_DECISION, cls.MAJORITY_ART25),
+            (_('Election of the members of the condominium council'), _('The general assembly elects ... as members of the condominium council.'), cls.KIND_DECISION, cls.MAJORITY_ART25),
+            (_('Works fund contribution'), _('The general assembly sets the annual contribution to the works fund at ... EUR (at least 5% of the forecast budget).'), cls.KIND_DECISION, cls.MAJORITY_ART25),
+            (_('Preparation of a multi-year works plan'), _('The general assembly decides to have a draft multi-year works plan prepared by ...'), cls.KIND_DECISION, cls.MAJORITY_ART24),
+            (_('Adoption of the multi-year works plan'), _('The general assembly adopts the multi-year works plan annexed to the notice of meeting.'), cls.KIND_DECISION, cls.MAJORITY_ART25),
+            (_('Maintenance works'), _('The general assembly decides to carry out the following works: ... for a budget of ... EUR.'), cls.KIND_DECISION, cls.MAJORITY_ART24),
+            (_('Amendment of the condominium regulations'), _('The general assembly decides to amend the condominium regulations as follows: ...'), cls.KIND_DECISION, cls.MAJORITY_ART26),
+            (_('Amendment of the distribution of charges'), _('The general assembly decides to amend the distribution of charges as follows: ...'), cls.KIND_DECISION, cls.MAJORITY_UNANIMITY),
+            (_('Information of the syndic'), _('The syndic presents to the general assembly: ...'), cls.KIND_INFORMATION, None),
+        )
+
+    @classmethod
+    def create_from_templates(cls, template_indexes, assembly=None):
+        templates = cls.get_templates()
+        for template_index in template_indexes:
+            title, text, kind, majority = templates[int(template_index)]
+            new_item = cls.objects.create(title=title, text=text, kind=kind, majority=majority)
+            if assembly is not None:
+                new_item.attach(assembly)
+
     def attach(self, assembly):
         if assembly.status != Assembly.STATUS_BUILDING:
             raise LucteriosException(IMPORTANT, _('This general assembly is no longer in building!'))
