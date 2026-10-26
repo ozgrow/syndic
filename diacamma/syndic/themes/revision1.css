@@ -1,0 +1,143 @@
+/* Diacamma Syndic - theme "revision 1"
+ * Purely aesthetic: colours, spacing, radius, shadows. No change of layout or structure.
+ * Inline colours set by the client are overridden with !important.
+ */
+:root {
+	--dc-bg: #f3f5f9;
+	--dc-surface: #ffffff;
+	--dc-ink: #1f2937;
+	--dc-ink-soft: #6b7280;
+	--dc-line: #e5e7eb;
+	--dc-primary: #1e3a5f;
+	--dc-accent: #e8890c;
+	--dc-accent-soft: #fdf3e4;
+	--dc-radius: 10px;
+	--dc-shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.10);
+	--dc-shadow-hover: 0 4px 12px rgba(16, 24, 40, 0.12);
+}
+
+body, .v-application {
+	background: var(--dc-bg) !important;
+	color: var(--dc-ink);
+	font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif !important;
+}
+
+/* Top bar */
+.v-app-bar {
+	background-color: var(--dc-primary) !important;
+	box-shadow: 0 2px 8px rgba(16, 24, 40, 0.18) !important;
+}
+.v-app-bar .v-icon {
+	color: #ffd08a !important;
+}
+
+/* Main tabs */
+.mainmenu {
+	background-color: var(--dc-surface) !important;
+	color: var(--dc-ink) !important;
+	border-bottom: 1px solid var(--dc-line);
+	border-radius: var(--dc-radius) var(--dc-radius) 0 0;
+}
+.mainmenu .v-tab {
+	color: var(--dc-ink-soft) !important;
+	letter-spacing: 0.02em;
+}
+.mainmenu .v-tab--selected {
+	color: var(--dc-primary) !important;
+}
+.mainmenu .v-tab__slider {
+	color: var(--dc-accent) !important;
+	height: 3px !important;
+}
+
+/* Cards and section blocks */
+.v-card {
+	border-radius: var(--dc-radius) !important;
+	box-shadow: var(--dc-shadow) !important;
+}
+.v-card > .v-card-item > .v-card-item__content > .v-toolbar:not(.bg-menu) {
+	background-color: transparent !important;
+	color: var(--dc-primary) !important;
+	border-bottom: 2px solid var(--dc-accent);
+	font-weight: 600;
+}
+.v-card > .v-card-item > .v-card-item__content > .v-toolbar:not(.bg-menu) .v-icon {
+	color: var(--dc-accent) !important;
+}
+
+/* Menu tiles */
+.v-card.submenu {
+	background-color: var(--dc-surface) !important;
+	color: var(--dc-ink) !important;
+	border: 1px solid var(--dc-line);
+	border-left: 4px solid var(--dc-accent);
+	transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+.v-card.submenu:hover {
+	box-shadow: var(--dc-shadow-hover) !important;
+	transform: translateY(-1px);
+}
+.v-card.submenu .bg-menu {
+	background-color: transparent !important;
+	color: var(--dc-ink) !important;
+}
+.v-card.submenu .v-icon {
+	color: var(--dc-primary) !important;
+}
+
+/* Descriptions */
+.show_help {
+	background: var(--dc-accent-soft) !important;
+	border: none !important;
+	border-left: 3px solid var(--dc-accent) !important;
+	border-radius: 6px;
+	color: var(--dc-ink-soft) !important;
+	padding: 6px 10px !important;
+}
+
+/* Dialogs */
+.v-card-title.frm-title {
+	background-color: var(--dc-primary) !important;
+	color: #ffffff !important;
+	font-weight: 600;
+}
+.v-card-title.frm-title.bg-grey-lighten-1 {
+	background-color: #5b7290 !important;
+}
+.v-card-actions {
+	background-color: #f9fafb !important;
+	border-top: 1px solid var(--dc-line);
+}
+
+/* Buttons */
+.v-btn {
+	border-radius: 8px !important;
+	text-transform: none !important;
+	letter-spacing: 0.01em !important;
+}
+.v-card-actions .v-btn {
+	background-color: var(--dc-surface) !important;
+	border: 1px solid var(--dc-line);
+	color: var(--dc-ink) !important;
+}
+
+/* Grids */
+.v-table {
+	border-radius: var(--dc-radius);
+	overflow: hidden;
+}
+.v-table thead th {
+	background-color: #f9fafb !important;
+	color: var(--dc-ink-soft) !important;
+	font-weight: 600 !important;
+	text-transform: uppercase;
+	font-size: 0.75rem !important;
+}
+.v-table tbody tr:hover td {
+	background-color: var(--dc-accent-soft) !important;
+}
+
+/* Form fields */
+.v-field {
+	border-radius: 8px !important;
+}

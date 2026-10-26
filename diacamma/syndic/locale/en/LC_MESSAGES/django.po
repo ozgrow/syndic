@@ -64,3 +64,15 @@ msgstr "spending"
 #: migrations/0001_initial.py:50 migrations/0002_check_journal.py:41
 msgid "revenue"
 msgstr "revenue"
+
+msgid "syndic-theme"
+msgstr "interface theme"
+
+msgid "syndic-theme.0"
+msgstr "historic"
+
+msgid "syndic-theme.1"
+msgstr "revision 1"
+
+msgid "Appearance"
+msgstr "Appearance"
