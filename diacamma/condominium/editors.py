@@ -383,7 +383,7 @@ class AgendaItemEditor(LucteriosEditor):
         requested_by.select_list[0] = (0, _('syndic'))
         majority = xfer.get_components('majority')
         majority_help = XferCompLabelForm('majority_help')
-        majority_help.set_value_as_info(AgendaItem.MAJORITY_HELP)
+        majority_help.set_value("{[i]}%s{[/i]}" % AgendaItem.MAJORITY_HELP)
         majority_help.set_location(majority.col, xfer.get_max_row() + 1, 2)
         xfer.add_component(majority_help)
         kind = xfer.get_components('kind')
