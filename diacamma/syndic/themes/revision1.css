@@ -133,8 +133,16 @@ body, .v-application {
 	text-transform: uppercase;
 	font-size: 0.75rem !important;
 }
-.v-table tbody tr:hover td {
+/* Hovered and selected rows: light background, so the text must stay dark */
+.v-table tbody tr:hover td,
+.v-table tbody tr.v-data-table__selected td,
+.v-table tbody tr[aria-selected="true"] td {
 	background-color: var(--dc-accent-soft) !important;
+}
+.v-table tbody tr:hover td, .v-table tbody tr:hover td *,
+.v-table tbody tr.v-data-table__selected td, .v-table tbody tr.v-data-table__selected td *,
+.v-table tbody tr[aria-selected="true"] td, .v-table tbody tr[aria-selected="true"] td * {
+	color: var(--dc-ink) !important;
 }
 
 /* Form fields */
