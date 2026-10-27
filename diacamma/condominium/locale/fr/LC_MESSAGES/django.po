@@ -1920,3 +1920,216 @@ msgstr "Ajouter des points depuis un modèle"
 
 msgid "templates"
 msgstr "modèles"
+
+msgid "convened"
+msgstr "convoquée"
+
+msgid "latest notification date"
+msgstr "date limite de notification"
+
+msgid "notified in time"
+msgstr "notifiés dans les délais"
+
+msgid "The date of the general assembly is not defined."
+msgstr "La date de l'assemblée générale n'est pas définie."
+
+msgid "The agenda is empty."
+msgstr "L'ordre du jour est vide."
+
+msgid "Some attachments of the notice are not provided."
+msgstr "Des pièces jointes de la convocation ne sont pas fournies."
+
+msgid "No owner to convene."
+msgstr "Aucun copropriétaire à convoquer."
+
+msgid "Convene"
+msgstr "Convoquer"
+
+msgid "001@Agenda"
+msgstr "001@Ordre du jour"
+
+msgid "002@Notice of meeting"
+msgstr "002@Convocation"
+
+msgid "provided"
+msgstr "fournie"
+
+msgid "Financial statement and general management account (approval of the accounts)"
+msgstr "État financier et compte de gestion général (approbation des comptes)"
+
+msgid "Draft individual distribution of the accounts for each owner"
+msgstr "Projet d'état individuel de répartition des comptes de chaque copropriétaire"
+
+msgid "Draft forecast budget with the draft individual distribution"
+msgstr "Projet de budget prévisionnel avec le projet d'état individuel de répartition"
+
+msgid "Quotes or essential conditions of the contracts and works submitted to the vote"
+msgstr "Devis ou conditions essentielles des contrats et marchés soumis au vote"
+
+msgid "Draft amendment of the condominium regulations"
+msgstr "Projet de modification du règlement de copropriété"
+
+msgid "Draft multi-year works plan / technical global diagnosis"
+msgstr "Projet de plan pluriannuel de travaux / diagnostic technique global"
+
+msgid "Postal voting form"
+msgstr "Formulaire de vote par correspondance"
+
+msgid "attachment of notice"
+msgstr "pièce jointe de convocation"
+
+msgid "attachments of notice"
+msgstr "pièces jointes de convocation"
+
+msgid "reception date of the request"
+msgstr "date de réception de la demande"
+
+msgid "made in general assembly"
+msgstr "faite en assemblée générale"
+
+msgid "end date"
+msgstr "date de fin"
+
+msgid "effective date"
+msgstr "date d'effet"
+
+msgid "An owner may ask at any time, by any means giving a certain date, to receive the notifications by post (registered letter). The request takes effect the day after the 8th day following its reception by the syndic, or immediately if it is made during a general assembly (to be recorded in the minutes)."
+msgstr "Un copropriétaire peut demander à tout moment, par tout moyen donnant date certaine, à recevoir les notifications par voie postale (lettre recommandée). La demande prend effet le lendemain du 8e jour suivant sa réception par le syndic, ou immédiatement si elle est faite en assemblée générale (à mentionner au procès-verbal)."
+
+msgid "request of postal delivery"
+msgstr "demande de voie postale"
+
+msgid "requests of postal delivery"
+msgstr "demandes de voie postale"
+
+msgid "notice of meeting"
+msgstr "convocation"
+
+msgid "minutes"
+msgstr "procès-verbal"
+
+msgid "qualified electronic registered letter"
+msgstr "lettre recommandée électronique qualifiée"
+
+msgid "registered letter with acknowledgement of receipt"
+msgstr "lettre recommandée avec accusé de réception"
+
+msgid "hand delivery against signature"
+msgstr "remise en main propre contre émargement"
+
+msgid "simple e-mail (information only)"
+msgstr "e-mail simple (information seulement)"
+
+msgid "The notice must be notified at least 21 days before the general assembly, counted from the day after the sending (electronic registered letter), the first presentation (postal registered letter) or the hand delivery: the general assembly can be held at the earliest on the 22nd day. A simple e-mail is not a valid notification."
+msgstr "La convocation doit être notifiée au moins 21 jours avant l'assemblée générale, délai compté à partir du lendemain de l'envoi (lettre recommandée électronique), de la première présentation (lettre recommandée postale) ou de la remise en main propre : l'assemblée peut se tenir au plus tôt le 22e jour. Un simple e-mail n'est pas une notification valable."
+
+msgid "channel"
+msgstr "moyen d'envoi"
+
+msgid "sending or delivery date"
+msgstr "date d'envoi ou de remise"
+
+msgid "first presentation date"
+msgstr "date de première présentation"
+
+msgid "delay"
+msgstr "délai"
+
+msgid "simple e-mail is not a valid notification"
+msgstr "un simple e-mail n'est pas une notification valable"
+
+msgid "postal delivery requested: registered letter expected"
+msgstr "voie postale demandée : lettre recommandée attendue"
+
+msgid "waiting for first presentation"
+msgstr "en attente de première présentation"
+
+msgid "not notified"
+msgstr "non notifié"
+
+msgid "in time"
+msgstr "dans les délais"
+
+msgid "too late (%d days instead of %d)"
+msgstr "hors délai (%d jours au lieu de %d)"
+
+msgid "notification"
+msgstr "notification"
+
+msgid "notifications"
+msgstr "notifications"
+
+msgid "Add attachment of notice"
+msgstr "Ajouter une pièce jointe"
+
+msgid "Modify attachment of notice"
+msgstr "Modifier une pièce jointe"
+
+msgid "Delete attachment of notice"
+msgstr "Supprimer une pièce jointe"
+
+msgid "Provided"
+msgstr "Fournie"
+
+msgid "Attachment provided"
+msgstr "Pièce jointe fournie"
+
+msgid "Add attachments of notice from template"
+msgstr "Ajouter des pièces jointes depuis les modèles"
+
+msgid "Modify notification"
+msgstr "Modifier la notification"
+
+msgid "Show notification"
+msgstr "Voir la notification"
+
+msgid "Sent"
+msgstr "Envoyée"
+
+msgid "Record the sending"
+msgstr "Enregistrer l'envoi"
+
+msgid "Notice"
+msgstr "Convocation"
+
+msgid "Print notice of meeting"
+msgstr "Imprimer la convocation"
+
+msgid "Requests of owners to receive the notifications by post"
+msgstr "Demandes des copropriétaires de recevoir les notifications par voie postale"
+
+msgid "Requests of postal delivery"
+msgstr "Demandes de voie postale"
+
+msgid "Add request of postal delivery"
+msgstr "Ajouter une demande de voie postale"
+
+msgid "Modify request of postal delivery"
+msgstr "Modifier une demande de voie postale"
+
+msgid "Show request of postal delivery"
+msgstr "Voir une demande de voie postale"
+
+msgid "Delete request of postal delivery"
+msgstr "Supprimer une demande de voie postale"
+
+msgid "Notice of the general assembly"
+msgstr "Convocation à l'assemblée générale"
+
+msgid "Dear owner, you are convened to the general assembly of the co-owners, which will be held:"
+msgstr "Madame, Monsieur, vous êtes convoqué(e) à l'assemblée générale des copropriétaires, qui se tiendra :"
+
+msgid "Agenda"
+msgstr "Ordre du jour"
+
+msgid "Attached documents"
+msgstr "Pièces jointes"
+
+msgid "If you cannot attend, you may be represented by a proxy, or vote by post with the attached form: the form must reach the syndic at least 3 full days before the general assembly."
+msgstr "Si vous ne pouvez pas être présent(e), vous pouvez vous faire représenter par un mandataire, ou voter par correspondance avec le formulaire joint : il doit parvenir au syndic au plus tard 3 jours francs avant l'assemblée générale."
+
+msgid "You may ask at any time, by any means giving a certain date, to receive the notices of meeting, the minutes and the calls for funds by post (article 64-2 of the decree of 17 March 1967)."
+msgstr "Vous pouvez demander à tout moment, par tout moyen donnant date certaine, à recevoir par voie postale les convocations, les procès-verbaux et les appels de fonds (article 64-2 du décret du 17 mars 1967)."
+
+msgid "The syndic"
+msgstr "Le syndic"

@@ -38,7 +38,7 @@ from diacamma.accounting.tools import current_system_account
 from diacamma.accounting.models import Third, FiscalYear
 from diacamma.payoff.editors import SupportingEditor
 from diacamma.condominium.models import Set, CallDetail, CallFunds, CallFundsSupporting, Expense, Owner, RecoverableLoadRatio, LIST_DEFAULT_ACCOUNTS, \
-    PropertyLot, Assembly, AgendaItem
+    PropertyLot, Assembly, AgendaItem, Notification, PostalRequest
 from diacamma.condominium.system import current_system_condo
 
 
@@ -409,3 +409,32 @@ parent.get('distribution_key').setVisible(is_decision);
         requested_by = xfer.get_components('requested_by')
         if requested_by.value is None:
             requested_by.value = _('syndic')
+
+
+class NotificationEditor(LucteriosEditor):
+
+    def edit(self, xfer):
+        channel = xfer.get_components('channel')
+        delay_help = XferCompLabelForm('delay_help')
+        delay_help.set_value("{[i]}%s{[/i]}" % Notification.DELAY_HELP)
+        delay_help.set_location(channel.col, xfer.get_max_row() + 1, 2)
+        xfer.add_component(delay_help)
+        channel.java_script = """
+var is_lrar=(current.getValue()==%d);
+parent.get('presentation_date').setVisible(is_lrar);
+""" % Notification.CHANNEL_LRAR
+
+    def show(self, xfer):
+        if self.item.channel != Notification.CHANNEL_LRAR:
+            xfer.remove_component('presentation_date')
+
+
+class PostalRequestEditor(LucteriosEditor):
+
+    def edit(self, xfer):
+        owner = xfer.get_components('owner')
+        owner.set_select_query(Owner.objects.filter(third__status=Third.STATUS_ENABLE))
+        request_help = XferCompLabelForm('request_help')
+        request_help.set_value("{[i]}%s{[/i]}" % PostalRequest.REQUEST_HELP)
+        request_help.set_location(owner.col, xfer.get_max_row() + 1, 2)
+        xfer.add_component(request_help)

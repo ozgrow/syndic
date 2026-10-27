@@ -23,20 +23,21 @@ along with Lucterios.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from __future__ import unicode_literals
+from datetime import date
 
 from django.utils.translation import gettext_lazy as _
 from django.db.models import Q
 
 from lucterios.framework.xferadvance import XferListEditor, XferAddEditor, XferShowEditor, XferDelete, \
-    TITLE_ADD, TITLE_MODIFY, TITLE_DELETE, TITLE_EDIT, TITLE_CREATE, TITLE_PRINT, TITLE_OK, TITLE_CANCEL
+    TITLE_ADD, TITLE_MODIFY, TITLE_DELETE, TITLE_EDIT, TITLE_CREATE, TITLE_PRINT, TITLE_OK, TITLE_CANCEL, XferTransition
 from lucterios.framework.xfergraphic import XferContainerAcknowledge
-from lucterios.framework.xfercomponents import XferCompSelect, XferCompCheckList, XferCompImage
-from lucterios.framework.tools import ActionsManage, MenuManage, WrapAction, FORMTYPE_NOMODAL, CLOSE_NO, CLOSE_YES, \
+from lucterios.framework.xfercomponents import XferCompSelect, XferCompCheckList, XferCompImage, XferCompDate
+from lucterios.framework.tools import convert_date, ActionsManage, MenuManage, WrapAction, FORMTYPE_NOMODAL, CLOSE_NO, CLOSE_YES, \
     SELECT_SINGLE, SELECT_MULTI
 from lucterios.framework.error import LucteriosException, IMPORTANT
 from lucterios.CORE.xferprint import XferPrintReporting
 
-from diacamma.condominium.models import Assembly, AgendaItem
+from diacamma.condominium.models import Assembly, AgendaItem, AssemblyAttachment, Notification, PostalRequest
 
 MenuManage.add_sub("condominium.assembly", "condominium", short_icon='mdi:mdi-account-group-outline', caption=_("General assemblies"),
                    desc=_("Preparation of general assemblies"), pos=15)
@@ -285,3 +286,175 @@ class AgendaItemAttach(XferContainerAcknowledge):
             for item in self.items:
                 if item.assembly is None:
                     item.attach(assembly)
+
+
+def assembly_convened(xfer):
+    return in_assembly(xfer) and (xfer.item.status == Assembly.STATUS_CONVENED)
+
+
+@ActionsManage.affect_transition("status", close=CLOSE_NO)
+@MenuManage.describ('condominium.add_assembly')
+class AssemblyTransition(XferTransition):
+    short_icon = "mdi:mdi-account-group-outline"
+    model = Assembly
+    field_id = 'assembly'
+
+
+@ActionsManage.affect_grid(TITLE_ADD, short_icon='mdi:mdi-pencil-plus-outline', condition=lambda xfer, gridname='': assembly_in_building(xfer))
+@ActionsManage.affect_grid(TITLE_MODIFY, short_icon='mdi:mdi-pencil-outline', unique=SELECT_SINGLE, condition=lambda xfer, gridname='': assembly_in_building(xfer))
+@MenuManage.describ('condominium.add_assembly')
+class AssemblyAttachmentAddModify(XferAddEditor):
+    short_icon = "mdi:mdi-paperclip"
+    model = AssemblyAttachment
+    field_id = 'assemblyattachment'
+    caption_add = _("Add attachment of notice")
+    caption_modify = _("Modify attachment of notice")
+
+
+@ActionsManage.affect_grid(TITLE_DELETE, short_icon='mdi:mdi-delete-outline', unique=SELECT_MULTI, condition=lambda xfer, gridname='': assembly_in_building(xfer))
+@MenuManage.describ('condominium.add_assembly')
+class AssemblyAttachmentDel(XferDelete):
+    short_icon = "mdi:mdi-paperclip"
+    model = AssemblyAttachment
+    field_id = 'assemblyattachment'
+    caption = _("Delete attachment of notice")
+
+
+@ActionsManage.affect_grid(_('Provided'), short_icon='mdi:mdi-check-all', unique=SELECT_MULTI, condition=lambda xfer, gridname='': assembly_in_building(xfer))
+@MenuManage.describ('condominium.add_assembly')
+class AssemblyAttachmentProvided(XferContainerAcknowledge):
+    short_icon = "mdi:mdi-paperclip"
+    model = AssemblyAttachment
+    field_id = 'assemblyattachment'
+    caption = _("Attachment provided")
+
+    def fillresponse(self):
+        for item in self.items:
+            item.provided = True
+            item.save()
+
+
+@ActionsManage.affect_grid(_('Add from template'), short_icon='mdi:mdi-text-box-plus-outline', condition=lambda xfer, gridname='': assembly_in_building(xfer))
+@MenuManage.describ('condominium.add_assembly')
+class AssemblyAttachmentAddFromTemplate(XferContainerAcknowledge):
+    short_icon = "mdi:mdi-paperclip"
+    model = AssemblyAttachment
+    field_id = 'assemblyattachment'
+    caption = _("Add attachments of notice from template")
+
+    def fillresponse(self, templates=(), assembly=0):
+        if self.getparam('SAVE') is None:
+            dlg = self.create_custom(model=AssemblyAttachment)
+            img = XferCompImage('img')
+            img.set_value(self.short_icon, '#')
+            img.set_location(0, 0)
+            dlg.add_component(img)
+            sel = XferCompCheckList('templates')
+            sel.set_select(list(enumerate(AssemblyAttachment.get_templates())))
+            sel.set_location(1, 0)
+            sel.description = _('templates')
+            dlg.add_component(sel)
+            dlg.add_action(self.return_action(TITLE_OK, short_icon='mdi:mdi-check'), params={"SAVE": "YES"})
+            dlg.add_action(WrapAction(TITLE_CANCEL, short_icon='mdi:mdi-cancel'))
+        else:
+            AssemblyAttachment.create_from_templates(templates, Assembly.objects.get(id=assembly))
+
+
+@ActionsManage.affect_grid(TITLE_MODIFY, short_icon='mdi:mdi-pencil-outline', unique=SELECT_SINGLE, condition=lambda xfer, gridname='': assembly_convened(xfer))
+@MenuManage.describ('condominium.add_assembly')
+class NotificationModify(XferAddEditor):
+    short_icon = "mdi:mdi-email-check-outline"
+    model = Notification
+    field_id = 'notification'
+    caption_add = _("Modify notification")
+    caption_modify = _("Modify notification")
+
+
+@ActionsManage.affect_grid(TITLE_EDIT, short_icon='mdi:mdi-text-box-outline', unique=SELECT_SINGLE)
+@MenuManage.describ('condominium.change_assembly')
+class NotificationShow(XferShowEditor):
+    short_icon = "mdi:mdi-email-check-outline"
+    model = Notification
+    field_id = 'notification'
+    caption = _("Show notification")
+
+
+@ActionsManage.affect_grid(_('Sent'), short_icon='mdi:mdi-send-check-outline', unique=SELECT_MULTI, condition=lambda xfer, gridname='': assembly_convened(xfer))
+@MenuManage.describ('condominium.add_assembly')
+class NotificationSent(XferContainerAcknowledge):
+    short_icon = "mdi:mdi-email-check-outline"
+    model = Notification
+    field_id = 'notification'
+    caption = _("Record the sending")
+
+    def fillresponse(self, sent_date=None):
+        if self.getparam('SAVE') is None:
+            dlg = self.create_custom(model=Notification)
+            img = XferCompImage('img')
+            img.set_value(self.short_icon, '#')
+            img.set_location(0, 0)
+            dlg.add_component(img)
+            sel = XferCompDate('sent_date')
+            sel.set_needed(True)
+            sel.set_value(date.today())
+            sel.set_location(1, 0)
+            sel.description = _('sending or delivery date')
+            dlg.add_component(sel)
+            dlg.add_action(self.return_action(TITLE_OK, short_icon='mdi:mdi-check'), params={"SAVE": "YES"})
+            dlg.add_action(WrapAction(TITLE_CANCEL, short_icon='mdi:mdi-cancel'))
+        else:
+            for item in self.items:
+                item.sent_date = convert_date(sent_date)
+                item.save()
+
+
+@ActionsManage.affect_grid(_('Notice'), short_icon='mdi:mdi-printer-outline', unique=SELECT_MULTI, condition=lambda xfer, gridname='': assembly_convened(xfer))
+@MenuManage.describ('condominium.change_assembly')
+class NotificationPrint(XferPrintReporting):
+    short_icon = "mdi:mdi-email-check-outline"
+    model = Notification
+    field_id = 'notification'
+    caption = _("Print notice of meeting")
+
+    def items_callback(self):
+        return self.items
+
+    def get_print_name(self):
+        return "%s - %s" % (_('notice of meeting'), self.items[0]) if len(self.items) == 1 else str(self.caption)
+
+
+@MenuManage.describ('condominium.change_assembly', FORMTYPE_NOMODAL, 'condominium.assembly', _('Requests of owners to receive the notifications by post'))
+class PostalRequestList(XferListEditor):
+    short_icon = "mdi:mdi-mailbox-outline"
+    model = PostalRequest
+    field_id = 'postalrequest'
+    caption = _("Requests of postal delivery")
+
+
+@ActionsManage.affect_grid(TITLE_ADD, short_icon='mdi:mdi-pencil-plus-outline')
+@ActionsManage.affect_grid(TITLE_MODIFY, short_icon='mdi:mdi-pencil-outline', unique=SELECT_SINGLE)
+@MenuManage.describ('condominium.add_assembly')
+class PostalRequestAddModify(XferAddEditor):
+    short_icon = "mdi:mdi-mailbox-outline"
+    model = PostalRequest
+    field_id = 'postalrequest'
+    caption_add = _("Add request of postal delivery")
+    caption_modify = _("Modify request of postal delivery")
+
+
+@ActionsManage.affect_grid(TITLE_EDIT, short_icon='mdi:mdi-text-box-outline', unique=SELECT_SINGLE)
+@MenuManage.describ('condominium.change_assembly')
+class PostalRequestShow(XferShowEditor):
+    short_icon = "mdi:mdi-mailbox-outline"
+    model = PostalRequest
+    field_id = 'postalrequest'
+    caption = _("Show request of postal delivery")
+
+
+@ActionsManage.affect_grid(TITLE_DELETE, short_icon='mdi:mdi-delete-outline', unique=SELECT_MULTI)
+@MenuManage.describ('condominium.delete_assembly')
+class PostalRequestDel(XferDelete):
+    short_icon = "mdi:mdi-mailbox-outline"
+    model = PostalRequest
+    field_id = 'postalrequest'
+    caption = _("Delete request of postal delivery")

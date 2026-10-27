@@ -23,7 +23,7 @@ along with Lucterios.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from __future__ import unicode_literals
-from datetime import date
+from datetime import date, timedelta
 from logging import getLogger
 from decimal import Decimal
 
@@ -2481,7 +2481,8 @@ class Assembly(LucteriosModel):
     LIST_TYPES = ((TYPE_ORDINARY, _('ordinary')), (TYPE_EXTRAORDINARY, _('extraordinary')))
 
     STATUS_BUILDING = 0
-    LIST_STATUS = ((STATUS_BUILDING, _('in preparation')),)
+    STATUS_CONVENED = 1
+    LIST_STATUS = ((STATUS_BUILDING, _('in preparation')), (STATUS_CONVENED, _('convened')))
 
     date = models.DateField(verbose_name=_('date'), null=True, default=None)
     hour = models.TimeField(verbose_name=_('hour'), null=True, default=None)
@@ -2489,6 +2490,9 @@ class Assembly(LucteriosModel):
     type_assembly = models.IntegerField(verbose_name=_('type of assembly'), choices=LIST_TYPES, null=False, default=TYPE_ORDINARY)
     status = FSMIntegerField(verbose_name=_('status'), choices=LIST_STATUS, null=False, default=STATUS_BUILDING, db_index=True)
     comment = models.TextField(_('comment'), null=True, default="")
+
+    convocation_deadline = LucteriosVirtualField(verbose_name=_('latest notification date'), compute_from='get_convocation_deadline_txt')
+    convocation_state = LucteriosVirtualField(verbose_name=_('notified in time'), compute_from='get_convocation_state')
 
     def __str__(self):
         if self.date is None:
@@ -2505,7 +2509,9 @@ class Assembly(LucteriosModel):
 
     @classmethod
     def get_show_fields(cls):
-        return [("date", "hour"), ("place", "type_assembly"), "status", "agendaitem_set", "comment"]
+        return {"": [("date", "hour"), ("place", "type_assembly"), "status"],
+                _("001@Agenda"): ["agendaitem_set", "comment"],
+                _("002@Notice of meeting"): ["assemblyattachment_set", ("convocation_deadline", "convocation_state"), "notification_set"]}
 
     @classmethod
     def get_print_fields(cls):
@@ -2519,6 +2525,55 @@ class Assembly(LucteriosModel):
                             (_('Secretary of the meeting'), _('The general assembly appoints ... as secretary of the meeting.'))):
             AgendaItem.objects.create(title=title, text=text, kind=AgendaItem.KIND_DECISION,
                                       majority=AgendaItem.MAJORITY_ART24).attach(self)
+
+    def get_convocation_deadline(self):
+        if self.date is None:
+            return None
+        return self.date - timedelta(days=Notification.CONVOCATION_DELAY)
+
+    def get_convocation_deadline_txt(self):
+        deadline = self.get_convocation_deadline()
+        return get_date_formating(deadline) if deadline is not None else ''
+
+    def get_convocation_state(self):
+        if self.status == self.STATUS_BUILDING:
+            return ''
+        convocations = self.notification_set.filter(kind=Notification.KIND_CONVOCATION)
+        return "%d / %d" % (len([notif for notif in convocations if notif.is_in_time()]), convocations.count())
+
+    def get_convene_errors(self):
+        errors = []
+        if self.date is None:
+            errors.append(_('The date of the general assembly is not defined.'))
+        if self.agendaitem_set.count() == 0:
+            errors.append(_('The agenda is empty.'))
+        if self.assemblyattachment_set.filter(provided=False).exists():
+            errors.append(_('Some attachments of the notice are not provided.'))
+        if Owner.objects.filter(third__status=Third.STATUS_ENABLE).count() == 0:
+            errors.append(_('No owner to convene.'))
+        return errors
+
+    transitionname__convene = _("Convene")
+
+    @transition(field=status, source=STATUS_BUILDING, target=STATUS_CONVENED, conditions=[lambda item: (item.date is not None) and (item.agendaitem_set.count() > 0)])
+    def convene(self):
+        errors = self.get_convene_errors()
+        if len(errors) > 0:
+            raise LucteriosException(IMPORTANT, "{[br/]}".join([str(error) for error in errors]))
+        today = date.today()
+        for owner in Owner.objects.filter(third__status=Third.STATUS_ENABLE):
+            if not self.notification_set.filter(owner=owner, kind=Notification.KIND_CONVOCATION).exists():
+                channel = Notification.CHANNEL_LRAR if PostalRequest.is_postal(owner, today) else Notification.CHANNEL_LRE
+                Notification.objects.create(assembly=self, owner=owner, kind=Notification.KIND_CONVOCATION, channel=channel)
+
+    def can_reedit(self):
+        return not self.notification_set.filter(Q(sent_date__isnull=False) | Q(presentation_date__isnull=False)).exists()
+
+    transitionname__reedit = _("Re-edit")
+
+    @transition(field=status, source=STATUS_CONVENED, target=STATUS_BUILDING, conditions=[lambda item: item.can_reedit()])
+    def reedit(self):
+        self.notification_set.all().delete()
 
     def renumber(self):
         for index, item in enumerate(self.agendaitem_set.order_by('num', 'id')):
@@ -2647,6 +2702,215 @@ class AgendaItem(LucteriosModel):
         verbose_name = _('agenda item')
         verbose_name_plural = _('agenda items')
         ordering = ['assembly', 'num', 'id']
+
+
+class AssemblyAttachment(LucteriosModel):
+    assembly = models.ForeignKey(Assembly, verbose_name=_('general assembly'), null=False, db_index=True, on_delete=models.CASCADE)
+    title = models.CharField(_('title'), max_length=200, blank=False)
+    provided = models.BooleanField(verbose_name=_('provided'), default=False)
+    comment = models.TextField(_('comment'), null=True, default="")
+
+    def __str__(self):
+        return self.title
+
+    @classmethod
+    def get_default_fields(cls):
+        return ["title", "provided", "comment"]
+
+    @classmethod
+    def get_edit_fields(cls):
+        return ["title", "provided", "comment"]
+
+    @classmethod
+    def get_show_fields(cls):
+        return ["assembly", "title", "provided", "comment"]
+
+    @classmethod
+    def get_templates(cls):
+        return (_('Financial statement and general management account (approval of the accounts)'),
+                _('Draft individual distribution of the accounts for each owner'),
+                _('Draft forecast budget with the draft individual distribution'),
+                _('Quotes or essential conditions of the contracts and works submitted to the vote'),
+                _('Draft amendment of the condominium regulations'),
+                _('Draft multi-year works plan / technical global diagnosis'),
+                _('Postal voting form'))
+
+    @classmethod
+    def create_from_templates(cls, template_indexes, assembly):
+        templates = cls.get_templates()
+        for template_index in template_indexes:
+            cls.objects.create(assembly=assembly, title=templates[int(template_index)])
+
+    class Meta(object):
+        verbose_name = _('attachment of notice')
+        verbose_name_plural = _('attachments of notice')
+        ordering = ['assembly', 'id']
+
+
+class PostalRequest(LucteriosModel):
+    """Request of an owner to receive the notifications by post (law art. 42-1, decree art. 64-4)"""
+    owner = models.ForeignKey('condominium.Owner', verbose_name=_('owner'), null=False, db_index=True, on_delete=models.CASCADE)
+    request_date = models.DateField(verbose_name=_('reception date of the request'), null=False)
+    made_in_assembly = models.BooleanField(verbose_name=_('made in general assembly'), default=False)
+    end_date = models.DateField(verbose_name=_('end date'), null=True, default=None)
+    comment = models.TextField(_('comment'), null=True, default="")
+
+    effective_date = LucteriosVirtualField(verbose_name=_('effective date'), compute_from='get_effective_date_txt')
+
+    REQUEST_HELP = _("An owner may ask at any time, by any means giving a certain date, to receive the notifications by post (registered letter). "
+                     "The request takes effect the day after the 8th day following its reception by the syndic, "
+                     "or immediately if it is made during a general assembly (to be recorded in the minutes).")
+
+    def __str__(self):
+        return "%s (%s)" % (self.owner, self.get_effective_date_txt())
+
+    @classmethod
+    def get_default_fields(cls):
+        return ["owner", "request_date", "effective_date", "end_date"]
+
+    @classmethod
+    def get_edit_fields(cls):
+        return ["owner", "request_date", "made_in_assembly", "end_date", "comment"]
+
+    @classmethod
+    def get_show_fields(cls):
+        return ["owner", "request_date", "made_in_assembly", "effective_date", "end_date", "comment"]
+
+    def get_effective_date(self):
+        if self.request_date is None:
+            return None
+        if self.made_in_assembly:
+            return self.request_date
+        # effect the day after the 8th day following its reception by the syndic
+        return self.request_date + timedelta(days=9)
+
+    def get_effective_date_txt(self):
+        effective_date = self.get_effective_date()
+        return get_date_formating(effective_date) if effective_date is not None else ''
+
+    def is_active(self, at_date):
+        effective_date = self.get_effective_date()
+        return (effective_date is not None) and (effective_date <= at_date) and ((self.end_date is None) or (at_date < self.end_date))
+
+    @classmethod
+    def is_postal(cls, owner, at_date):
+        for request in cls.objects.filter(owner=owner):
+            if request.is_active(at_date):
+                return True
+        return False
+
+    class Meta(object):
+        verbose_name = _('request of postal delivery')
+        verbose_name_plural = _('requests of postal delivery')
+        ordering = ['-request_date']
+
+
+class Notification(LucteriosModel):
+    KIND_CONVOCATION = 0
+    KIND_MINUTES = 1
+    LIST_KINDS = ((KIND_CONVOCATION, _('notice of meeting')), (KIND_MINUTES, _('minutes')))
+
+    CHANNEL_LRE = 0
+    CHANNEL_LRAR = 1
+    CHANNEL_HAND = 2
+    CHANNEL_EMAIL = 3
+    LIST_CHANNELS = ((CHANNEL_LRE, _('qualified electronic registered letter')),
+                     (CHANNEL_LRAR, _('registered letter with acknowledgement of receipt')),
+                     (CHANNEL_HAND, _('hand delivery against signature')),
+                     (CHANNEL_EMAIL, _('simple e-mail (information only)')))
+
+    # minimal number of days between the notification date and the general assembly (21 days, starting the next day)
+    CONVOCATION_DELAY = 22
+
+    DELAY_HELP = _("The notice must be notified at least 21 days before the general assembly, counted from the day after "
+                   "the sending (electronic registered letter), the first presentation (postal registered letter) or the hand delivery: "
+                   "the general assembly can be held at the earliest on the 22nd day. A simple e-mail is not a valid notification.")
+
+    assembly = models.ForeignKey(Assembly, verbose_name=_('general assembly'), null=False, db_index=True, on_delete=models.CASCADE)
+    owner = models.ForeignKey('condominium.Owner', verbose_name=_('owner'), null=False, db_index=True, on_delete=models.CASCADE)
+    kind = models.IntegerField(verbose_name=_('kind'), choices=LIST_KINDS, null=False, default=KIND_CONVOCATION)
+    channel = models.IntegerField(verbose_name=_('channel'), choices=LIST_CHANNELS, null=False, default=CHANNEL_LRE)
+    sent_date = models.DateField(verbose_name=_('sending or delivery date'), null=True, default=None)
+    presentation_date = models.DateField(verbose_name=_('first presentation date'), null=True, default=None)
+    reference = models.CharField(_('reference'), max_length=100, blank=True, default='')
+    comment = models.TextField(_('comment'), null=True, default="")
+
+    delay_status = LucteriosVirtualField(verbose_name=_('delay'), compute_from='get_delay_status')
+
+    def __str__(self):
+        return "%s - %s" % (self.assembly, self.owner)
+
+    @classmethod
+    def get_default_fields(cls):
+        return ["owner", "channel", "sent_date", "presentation_date", "reference", "delay_status"]
+
+    @classmethod
+    def get_edit_fields(cls):
+        return ["channel", "sent_date", "presentation_date", "reference", "comment"]
+
+    @classmethod
+    def get_show_fields(cls):
+        return ["assembly", "owner", "kind", "channel", "sent_date", "presentation_date", "reference", "delay_status", "comment"]
+
+    @classmethod
+    def get_print_fields(cls):
+        fields = ["owner.third.contact.str", "owner.third.contact.address", "owner.third.contact.postal_code", "owner.third.contact.city",
+                  "assembly.date", "assembly.hour", "assembly.place", "assembly.type_assembly", "channel", "reference",
+                  "agendaitem_set.num", "agendaitem_set.title", "agendaitem_set.text", "agendaitem_set.kind", "agendaitem_set.majority",
+                  "assemblyattachment_set.title"]
+        return fields
+
+    @property
+    def agendaitem_set(self):
+        return self.assembly.agendaitem_set
+
+    @property
+    def assemblyattachment_set(self):
+        return self.assembly.assemblyattachment_set
+
+    def get_notification_date(self):
+        if self.channel == self.CHANNEL_LRAR:
+            return self.presentation_date
+        if self.channel in (self.CHANNEL_LRE, self.CHANNEL_HAND):
+            return self.sent_date
+        return None
+
+    def postal_expected(self):
+        return (self.channel != self.CHANNEL_LRAR) and PostalRequest.is_postal(self.owner, self.sent_date if self.sent_date is not None else date.today())
+
+    def is_in_time(self):
+        notification_date = self.get_notification_date()
+        if (notification_date is None) or (self.assembly.date is None) or self.postal_expected():
+            return False
+        return (self.assembly.date - notification_date).days >= self.CONVOCATION_DELAY
+
+    def get_delay_status(self):
+        if self.kind != self.KIND_CONVOCATION:
+            return ''
+        if self.channel == self.CHANNEL_EMAIL:
+            return _('simple e-mail is not a valid notification')
+        if self.postal_expected():
+            return _('postal delivery requested: registered letter expected')
+        notification_date = self.get_notification_date()
+        if notification_date is None:
+            if (self.channel == self.CHANNEL_LRAR) and (self.sent_date is not None):
+                return _('waiting for first presentation')
+            return _('not notified')
+        if self.assembly.date is None:
+            return ''
+        if self.is_in_time():
+            return _('in time')
+        return _('too late (%d days instead of %d)') % ((self.assembly.date - notification_date).days, self.CONVOCATION_DELAY)
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.channel = int(self.channel)
+        self.kind = int(self.kind)
+        return LucteriosModel.save(self, force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
+    class Meta(object):
+        verbose_name = _('notification')
+        verbose_name_plural = _('notifications')
+        ordering = ['assembly', 'kind', 'id']
 
 
 def convert_accounting(year, thirds_convert):
