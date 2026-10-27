@@ -86,17 +86,17 @@ value = """
         </cell>
     </rows>
 </table>
-<text height="8.0" width="190.0" top="95.0" left="0.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" text_align="left" line_height="11" font_family="sans-serif" font_weight="" font_size="11">
+<text height="8.0" width="190.0" top="95.0" left="0.0" padding="1.0" spacing="6.0" border_color="black" border_style="" border_width="0.2" text_align="left" line_height="11" font_family="sans-serif" font_weight="" font_size="11">
 {[b]}%(attachments)s{[/b]}
 </text>
-<text height="5.0" width="185.0" top="103.0" left="5.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="10" data="assemblyattachment_set">
+<text height="5.0" width="185.0" top="103.0" left="5.0" padding="1.0" spacing="0.5" border_color="black" border_style="" border_width="0.2" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="10" data="assemblyattachment_set">
 - #title
 </text>
-<text height="25.0" width="190.0" top="110.0" left="0.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="10">
+<text height="25.0" width="190.0" top="110.0" left="0.0" padding="1.0" spacing="6.0" border_color="black" border_style="" border_width="0.2" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="10">
 %(postal_vote)s{[br/]}{[br/]}
 {[i]}%(postal_request)s{[/i]}
 </text>
-<text height="15.0" width="80.0" top="140.0" left="110.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" text_align="center" line_height="11" font_family="sans-serif" font_weight="" font_size="11">
+<text height="15.0" width="80.0" top="140.0" left="110.0" padding="1.0" spacing="8.0" border_color="black" border_style="" border_width="0.2" text_align="center" line_height="11" font_family="sans-serif" font_weight="" font_size="11">
 %(syndic)s
 </text>
 </body>
