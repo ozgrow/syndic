@@ -23,17 +23,20 @@ along with Lucterios.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from __future__ import unicode_literals
+from datetime import date
 
 from lucterios.framework.test import LucteriosTest
 from lucterios.CORE.models import PrintModel
 
+from diacamma.accounting.models import Third
 from diacamma.accounting.test_tools import initial_thirds_fr, default_compta_fr, default_costaccounting
 from diacamma.payoff.test_tools import default_bankaccount_fr
 from diacamma.condominium.test_tools import default_setowner_fr
-from diacamma.condominium.models import Assembly, AgendaItem
+from diacamma.condominium.models import Assembly, AgendaItem, AssemblyAttachment, Notification, PostalRequest, Owner
 from diacamma.condominium.views_assembly import AssemblyList, AssemblyAddModify, AssemblyShow, AssemblyDel, AssemblyPrint, \
     AgendaItemList, AgendaItemAddModify, AgendaItemShow, AgendaItemDel, AgendaItemUp, AgendaItemDown, AgendaItemWithdraw, \
-    AssemblyAddPendingItems, AgendaItemAttach, AgendaItemAddFromTemplate
+    AssemblyAddPendingItems, AgendaItemAttach, AgendaItemAddFromTemplate, AssemblyTransition, AssemblyAttachmentAddFromTemplate, \
+    AssemblyAttachmentProvided, NotificationSent, NotificationModify, NotificationShow, NotificationPrint, PostalRequestAddModify, PostalRequestList
 
 
 class AssemblyAgendaTest(LucteriosTest):
@@ -218,4 +221,168 @@ class AssemblyAgendaTest(LucteriosTest):
         self.factory.xfer = AssemblyPrint()
         self.calljson('/diacamma.condominium/assemblyPrint', {'assembly': assembly.id, 'PRINT_MODE': 3, 'MODEL': print_model.id}, False)
         self.assert_observer('core.print', 'diacamma.condominium', 'assemblyPrint')
+        self.save_pdf()
+
+
+class AssemblyConvocationTest(LucteriosTest):
+
+    def setUp(self):
+        initial_thirds_fr()
+        LucteriosTest.setUp(self)
+        default_compta_fr(with12=False)
+        default_costaccounting()
+        default_bankaccount_fr()
+        default_setowner_fr()
+        self.owners = list(Owner.objects.filter(third__status=Third.STATUS_ENABLE).order_by('id'))
+
+    def _add_assembly(self):
+        self.factory.xfer = AssemblyAddModify()
+        self.calljson('/diacamma.condominium/assemblyAddModify', {'SAVE': 'YES', 'date': '2027-06-15', 'hour': '18:30', 'place': 'salle commune', 'type_assembly': 0}, False)
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyAddModify')
+        return Assembly.objects.order_by('-id').first()
+
+    def _transition(self, assembly, transition):
+        self.factory.xfer = AssemblyTransition()
+        self.calljson('/diacamma.condominium/assemblyTransition', {'CONFIRME': 'YES', 'assembly': assembly.id, 'TRANSITION': transition}, False)
+
+    def test_postal_request(self):
+        owner = self.owners[0]
+        request = PostalRequest.objects.create(owner=owner, request_date=date(2027, 3, 1))
+        self.assertEqual(request.get_effective_date(), date(2027, 3, 10))
+        self.assertFalse(PostalRequest.is_postal(owner, date(2027, 3, 9)))
+        self.assertTrue(PostalRequest.is_postal(owner, date(2027, 3, 10)))
+        self.assertFalse(PostalRequest.is_postal(self.owners[1], date(2027, 3, 10)))
+        request.end_date = date(2027, 5, 1)
+        request.save()
+        self.assertTrue(PostalRequest.is_postal(owner, date(2027, 4, 30)))
+        self.assertFalse(PostalRequest.is_postal(owner, date(2027, 5, 1)))
+        in_assembly = PostalRequest.objects.create(owner=self.owners[1], request_date=date(2027, 3, 1), made_in_assembly=True)
+        self.assertEqual(in_assembly.get_effective_date(), date(2027, 3, 1))
+
+        self.factory.xfer = PostalRequestAddModify()
+        self.calljson('/diacamma.condominium/postalRequestAddModify', {'SAVE': 'YES', 'owner': self.owners[2].id, 'request_date': '2027-02-01'}, False)
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'postalRequestAddModify')
+        self.factory.xfer = PostalRequestList()
+        self.calljson('/diacamma.condominium/postalRequestList', {}, False)
+        self.assert_observer('core.custom', 'diacamma.condominium', 'postalRequestList')
+        self.assert_count_equal('postalrequest', 3)
+        self.assert_json_equal('', 'postalrequest/@2/effective_date', '10 février 2027')
+
+    def test_delay(self):
+        assembly = self._add_assembly()
+        owner = self.owners[0]
+        notif = Notification(assembly=assembly, owner=owner, channel=Notification.CHANNEL_LRE)
+        self.assertEqual(notif.get_delay_status(), 'non notifié')
+        # 21 days counted from the day after: J-22 accepted, J-21 refused
+        notif.sent_date = date(2027, 5, 24)
+        self.assertTrue(notif.is_in_time())
+        self.assertEqual(notif.get_delay_status(), 'dans les délais')
+        notif.sent_date = date(2027, 5, 25)
+        self.assertFalse(notif.is_in_time())
+        self.assertEqual(notif.get_delay_status(), 'hors délai (21 jours au lieu de 22)')
+
+        notif = Notification(assembly=assembly, owner=owner, channel=Notification.CHANNEL_LRAR, sent_date=date(2027, 5, 20))
+        self.assertFalse(notif.is_in_time())
+        self.assertEqual(notif.get_delay_status(), 'en attente de première présentation')
+        notif.presentation_date = date(2027, 5, 24)
+        self.assertTrue(notif.is_in_time())
+        notif.presentation_date = date(2027, 5, 25)
+        self.assertFalse(notif.is_in_time())
+
+        notif = Notification(assembly=assembly, owner=owner, channel=Notification.CHANNEL_HAND, sent_date=date(2027, 5, 24))
+        self.assertTrue(notif.is_in_time())
+
+        notif = Notification(assembly=assembly, owner=owner, channel=Notification.CHANNEL_EMAIL, sent_date=date(2027, 5, 1))
+        self.assertFalse(notif.is_in_time())
+        self.assertEqual(notif.get_delay_status(), "un simple e-mail n'est pas une notification valable")
+
+        PostalRequest.objects.create(owner=owner, request_date=date(2027, 3, 1))
+        notif = Notification(assembly=assembly, owner=owner, channel=Notification.CHANNEL_LRE, sent_date=date(2027, 5, 1))
+        self.assertFalse(notif.is_in_time())
+        self.assertEqual(notif.get_delay_status(), 'voie postale demandée : lettre recommandée attendue')
+
+        self.assertEqual(assembly.get_convocation_deadline(), date(2027, 5, 24))
+
+    def test_convene(self):
+        assembly = self._add_assembly()
+        PostalRequest.objects.create(owner=self.owners[1], request_date=date(2026, 1, 1))
+        self.factory.xfer = AssemblyAttachmentAddFromTemplate()
+        self.calljson('/diacamma.condominium/assemblyAttachmentAddFromTemplate', {'assembly': assembly.id}, False)
+        self.assert_observer('core.custom', 'diacamma.condominium', 'assemblyAttachmentAddFromTemplate')
+        self.assert_select_equal('templates', len(AssemblyAttachment.get_templates()), checked=True)
+        self.factory.xfer = AssemblyAttachmentAddFromTemplate()
+        self.calljson('/diacamma.condominium/assemblyAttachmentAddFromTemplate', {'SAVE': 'YES', 'assembly': assembly.id, 'templates': '0;6'}, False)
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyAttachmentAddFromTemplate')
+
+        self.factory.xfer = AssemblyShow()
+        self.calljson('/diacamma.condominium/assemblyShow', {'assembly': assembly.id}, False)
+        self.assert_observer('core.custom', 'diacamma.condominium', 'assemblyShow')
+        self.assert_count_equal('assemblyattachment', 2)
+        self.assert_json_equal('', 'assemblyattachment/@1/title', 'Formulaire de vote par correspondance')
+        self.assert_json_equal('', 'assemblyattachment/@1/provided', False)
+        self.assert_count_equal('notification', 0)
+        self.assert_json_equal('LABELFORM', 'convocation_deadline', '24 mai 2027')
+
+        self._transition(assembly, 'convene')
+        self.assert_observer('core.exception', 'diacamma.condominium', 'assemblyTransition')
+        self.assert_json_equal('', 'message', 'Des pièces jointes de la convocation ne sont pas fournies.')
+        self.assertEqual(Assembly.objects.get(id=assembly.id).status, Assembly.STATUS_BUILDING)
+
+        self.factory.xfer = AssemblyAttachmentProvided()
+        self.calljson('/diacamma.condominium/assemblyAttachmentProvided',
+                      {'assemblyattachment': ';'.join([str(att.id) for att in assembly.assemblyattachment_set.all()])}, False)
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyAttachmentProvided')
+
+        self._transition(assembly, 'convene')
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyTransition')
+        assembly = Assembly.objects.get(id=assembly.id)
+        self.assertEqual(assembly.status, Assembly.STATUS_CONVENED)
+        self.assertEqual(assembly.notification_set.count(), len(self.owners))
+        self.assertEqual(assembly.notification_set.get(owner=self.owners[0]).channel, Notification.CHANNEL_LRE)
+        self.assertEqual(assembly.notification_set.get(owner=self.owners[1]).channel, Notification.CHANNEL_LRAR)
+        self.assertEqual(assembly.get_convocation_state(), '0 / %d' % len(self.owners))
+
+        # agenda is frozen
+        self.factory.xfer = AssemblyShow()
+        self.calljson('/diacamma.condominium/assemblyShow', {'assembly': assembly.id}, False)
+        self.assert_count_equal('notification', len(self.owners))
+        self.assert_json_equal('', 'notification/@0/delay_status', 'non notifié')
+        self.assert_json_equal('LABELFORM', 'status', Assembly.STATUS_CONVENED)
+        self.assertFalse('agendaItemUp' in [act['action'] for act in self.json_comp['agendaitem']['actions']])
+
+        # back to preparation: allowed while nothing is sent
+        self._transition(assembly, 'reedit')
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyTransition')
+        assembly = Assembly.objects.get(id=assembly.id)
+        self.assertEqual(assembly.status, Assembly.STATUS_BUILDING)
+        self.assertEqual(assembly.notification_set.count(), 0)
+
+        self._transition(assembly, 'convene')
+        assembly = Assembly.objects.get(id=assembly.id)
+        lre_ids = [str(notif.id) for notif in assembly.notification_set.filter(channel=Notification.CHANNEL_LRE)]
+        self.factory.xfer = NotificationSent()
+        self.calljson('/diacamma.condominium/notificationSent', {'notification': ';'.join(lre_ids), 'SAVE': 'YES', 'sent_date': '2027-05-20'}, False)
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'notificationSent')
+        lrar = assembly.notification_set.get(owner=self.owners[1])
+        self.factory.xfer = NotificationModify()
+        self.calljson('/diacamma.condominium/notificationModify', {'notification': lrar.id, 'SAVE': 'YES', 'sent_date': '2027-05-18',
+                                                                   'presentation_date': '2027-05-26', 'reference': '1A 234 567 8901 2'}, False)
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'notificationModify')
+        self.assertEqual(assembly.get_convocation_state(), '%d / %d' % (len(lre_ids), len(self.owners)))
+        self.assertFalse(assembly.can_reedit())
+        self.factory.xfer = NotificationShow()
+        self.calljson('/diacamma.condominium/notificationShow', {'notification': lrar.id}, False)
+        self.assert_observer('core.custom', 'diacamma.condominium', 'notificationShow')
+        self.assert_json_equal('LABELFORM', 'delay_status', 'hors délai (20 jours au lieu de 22)')
+
+    def test_print_notice(self):
+        assembly = self._add_assembly()
+        AssemblyAttachment.objects.create(assembly=assembly, title='Budget', provided=True)
+        self._transition(assembly, 'convene')
+        self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyTransition')
+        notifs = ';'.join([str(notif.id) for notif in Notification.objects.filter(assembly=assembly)])
+        print_model = PrintModel.objects.get(modelname=Notification.get_long_name())
+        self.factory.xfer = NotificationPrint()
+        self.calljson('/diacamma.condominium/notificationPrint', {'notification': notifs, 'PRINT_MODE': 3, 'MODEL': print_model.id}, False)
+        self.assert_observer('core.print', 'diacamma.condominium', 'notificationPrint')
         self.save_pdf()

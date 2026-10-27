@@ -1899,3 +1899,216 @@ msgstr "Add agenda items from template"
 
 msgid "templates"
 msgstr "templates"
+
+msgid "convened"
+msgstr "convened"
+
+msgid "latest notification date"
+msgstr "latest notification date"
+
+msgid "notified in time"
+msgstr "notified in time"
+
+msgid "The date of the general assembly is not defined."
+msgstr "The date of the general assembly is not defined."
+
+msgid "The agenda is empty."
+msgstr "The agenda is empty."
+
+msgid "Some attachments of the notice are not provided."
+msgstr "Some attachments of the notice are not provided."
+
+msgid "No owner to convene."
+msgstr "No owner to convene."
+
+msgid "Convene"
+msgstr "Convene"
+
+msgid "001@Agenda"
+msgstr "001@Agenda"
+
+msgid "002@Notice of meeting"
+msgstr "002@Notice of meeting"
+
+msgid "provided"
+msgstr "provided"
+
+msgid "Financial statement and general management account (approval of the accounts)"
+msgstr "Financial statement and general management account (approval of the accounts)"
+
+msgid "Draft individual distribution of the accounts for each owner"
+msgstr "Draft individual distribution of the accounts for each owner"
+
+msgid "Draft forecast budget with the draft individual distribution"
+msgstr "Draft forecast budget with the draft individual distribution"
+
+msgid "Quotes or essential conditions of the contracts and works submitted to the vote"
+msgstr "Quotes or essential conditions of the contracts and works submitted to the vote"
+
+msgid "Draft amendment of the condominium regulations"
+msgstr "Draft amendment of the condominium regulations"
+
+msgid "Draft multi-year works plan / technical global diagnosis"
+msgstr "Draft multi-year works plan / technical global diagnosis"
+
+msgid "Postal voting form"
+msgstr "Postal voting form"
+
+msgid "attachment of notice"
+msgstr "attachment of notice"
+
+msgid "attachments of notice"
+msgstr "attachments of notice"
+
+msgid "reception date of the request"
+msgstr "reception date of the request"
+
+msgid "made in general assembly"
+msgstr "made in general assembly"
+
+msgid "end date"
+msgstr "end date"
+
+msgid "effective date"
+msgstr "effective date"
+
+msgid "An owner may ask at any time, by any means giving a certain date, to receive the notifications by post (registered letter). The request takes effect the day after the 8th day following its reception by the syndic, or immediately if it is made during a general assembly (to be recorded in the minutes)."
+msgstr "An owner may ask at any time, by any means giving a certain date, to receive the notifications by post (registered letter). The request takes effect the day after the 8th day following its reception by the syndic, or immediately if it is made during a general assembly (to be recorded in the minutes)."
+
+msgid "request of postal delivery"
+msgstr "request of postal delivery"
+
+msgid "requests of postal delivery"
+msgstr "requests of postal delivery"
+
+msgid "notice of meeting"
+msgstr "notice of meeting"
+
+msgid "minutes"
+msgstr "minutes"
+
+msgid "qualified electronic registered letter"
+msgstr "qualified electronic registered letter"
+
+msgid "registered letter with acknowledgement of receipt"
+msgstr "registered letter with acknowledgement of receipt"
+
+msgid "hand delivery against signature"
+msgstr "hand delivery against signature"
+
+msgid "simple e-mail (information only)"
+msgstr "simple e-mail (information only)"
+
+msgid "The notice must be notified at least 21 days before the general assembly, counted from the day after the sending (electronic registered letter), the first presentation (postal registered letter) or the hand delivery: the general assembly can be held at the earliest on the 22nd day. A simple e-mail is not a valid notification."
+msgstr "The notice must be notified at least 21 days before the general assembly, counted from the day after the sending (electronic registered letter), the first presentation (postal registered letter) or the hand delivery: the general assembly can be held at the earliest on the 22nd day. A simple e-mail is not a valid notification."
+
+msgid "channel"
+msgstr "channel"
+
+msgid "sending or delivery date"
+msgstr "sending or delivery date"
+
+msgid "first presentation date"
+msgstr "first presentation date"
+
+msgid "delay"
+msgstr "delay"
+
+msgid "simple e-mail is not a valid notification"
+msgstr "simple e-mail is not a valid notification"
+
+msgid "postal delivery requested: registered letter expected"
+msgstr "postal delivery requested: registered letter expected"
+
+msgid "waiting for first presentation"
+msgstr "waiting for first presentation"
+
+msgid "not notified"
+msgstr "not notified"
+
+msgid "in time"
+msgstr "in time"
+
+msgid "too late (%d days instead of %d)"
+msgstr "too late (%d days instead of %d)"
+
+msgid "notification"
+msgstr "notification"
+
+msgid "notifications"
+msgstr "notifications"
+
+msgid "Add attachment of notice"
+msgstr "Add attachment of notice"
+
+msgid "Modify attachment of notice"
+msgstr "Modify attachment of notice"
+
+msgid "Delete attachment of notice"
+msgstr "Delete attachment of notice"
+
+msgid "Provided"
+msgstr "Provided"
+
+msgid "Attachment provided"
+msgstr "Attachment provided"
+
+msgid "Add attachments of notice from template"
+msgstr "Add attachments of notice from template"
+
+msgid "Modify notification"
+msgstr "Modify notification"
+
+msgid "Show notification"
+msgstr "Show notification"
+
+msgid "Sent"
+msgstr "Sent"
+
+msgid "Record the sending"
+msgstr "Record the sending"
+
+msgid "Notice"
+msgstr "Notice"
+
+msgid "Print notice of meeting"
+msgstr "Print notice of meeting"
+
+msgid "Requests of owners to receive the notifications by post"
+msgstr "Requests of owners to receive the notifications by post"
+
+msgid "Requests of postal delivery"
+msgstr "Requests of postal delivery"
+
+msgid "Add request of postal delivery"
+msgstr "Add request of postal delivery"
+
+msgid "Modify request of postal delivery"
+msgstr "Modify request of postal delivery"
+
+msgid "Show request of postal delivery"
+msgstr "Show request of postal delivery"
+
+msgid "Delete request of postal delivery"
+msgstr "Delete request of postal delivery"
+
+msgid "Notice of the general assembly"
+msgstr "Notice of the general assembly"
+
+msgid "Dear owner, you are convened to the general assembly of the co-owners, which will be held:"
+msgstr "Dear owner, you are convened to the general assembly of the co-owners, which will be held:"
+
+msgid "Agenda"
+msgstr "Agenda"
+
+msgid "Attached documents"
+msgstr "Attached documents"
+
+msgid "If you cannot attend, you may be represented by a proxy, or vote by post with the attached form: the form must reach the syndic at least 3 full days before the general assembly."
+msgstr "If you cannot attend, you may be represented by a proxy, or vote by post with the attached form: the form must reach the syndic at least 3 full days before the general assembly."
+
+msgid "You may ask at any time, by any means giving a certain date, to receive the notices of meeting, the minutes and the calls for funds by post (article 64-2 of the decree of 17 March 1967)."
+msgstr "You may ask at any time, by any means giving a certain date, to receive the notices of meeting, the minutes and the calls for funds by post (article 64-2 of the decree of 17 March 1967)."
+
+msgid "The syndic"
+msgstr "The syndic"
