@@ -365,6 +365,14 @@ class ExpenseDetailEditor(LucteriosEditor):
 
 class AssemblyEditor(LucteriosEditor):
 
+    DEFAULT_HOUR = "18:00:00"
+
+    def edit(self, xfer):
+        hour = xfer.get_components('hour')
+        if (hour is not None) and (hour.value is None):
+            # the web client can not edit an empty time
+            hour.set_value(self.DEFAULT_HOUR)
+
     def saving(self, xfer):
         if not self.item.agendaitem_set.exists():
             self.item.add_opening_items()

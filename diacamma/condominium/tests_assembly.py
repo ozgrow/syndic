@@ -109,6 +109,11 @@ class AssemblyAgendaTest(LucteriosTest):
         self.assert_observer('core.custom', 'diacamma.condominium', 'assemblyList')
         self.assert_count_equal('assembly', 0)
 
+        self.factory.xfer = AssemblyAddModify()
+        self.calljson('/diacamma.condominium/assemblyAddModify', {}, False)
+        self.assert_observer('core.custom', 'diacamma.condominium', 'assemblyAddModify')
+        self.assert_json_equal('TIME', 'hour', '18:00:00')
+
         assembly = self._add_assembly()
         self.assertEqual(assembly.status, Assembly.STATUS_BUILDING)
         self._check_agenda(assembly.id, ['Président de séance', 'Scrutateur(s)', 'Secrétaire de séance'])
@@ -117,6 +122,10 @@ class AssemblyAgendaTest(LucteriosTest):
         self.calljson('/diacamma.condominium/assemblyAddModify', {'SAVE': 'YES', 'assembly': assembly.id, 'place': 'chez le syndic'}, False)
         self.assert_observer('core.acknowledge', 'diacamma.condominium', 'assemblyAddModify')
         self._check_agenda(assembly.id, ['Président de séance', 'Scrutateur(s)', 'Secrétaire de séance'])
+
+        self.factory.xfer = AssemblyAddModify()
+        self.calljson('/diacamma.condominium/assemblyAddModify', {'assembly': assembly.id}, False)
+        self.assert_json_equal('TIME', 'hour', '18:30:00')
 
         self.factory.xfer = AssemblyList()
         self.calljson('/diacamma.condominium/assemblyList', {}, False)
